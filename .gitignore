@@ -1,2 +1,6 @@
 *.egg-info/
 __pycache__/
+*.sif
+work/
+.nextflow/
+.nextflow.log*
