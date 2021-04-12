@@ -1,13 +1,44 @@
 #!/usr/bin/env nextflow
 
+// Demo active learning workflow with tips (processes indicated as boxes)
+// The workflow is analogous to that of:
+// C. Schran, J. Behler & D. Marx, J. Chem. Theory Comput., 2019, 16, 88-99.
+//                                            ┌─────────┐
+//                                    ┌──────►│Label4Qbc├─────┐
+//                                    │       └─────────┘     │
+//                                    │            ▲          ▼
+// ┌──────┐          ┌─────────┐      │       ┌────┴────┐ ┌──────┐y
+// │Lammps├─►InitDs─►│PinnTrain├─►PiNetModel─►│AseSample│ │ErrTol├─►FinalModel
+// └──────┘          └─────────┘              └─────────┘ └───┬──┘
+//                        ▲                                   │n
+//                        │      ┌───────────┐                │
+//                      AugDs◄───┤LammpsLabel│◄─Ds2Label◄─────┘
+//                               └───────────┘
+// Flowchart generated with: https://asciiflow.com/
+
+// Parameters (fixed or from input)
+// Lammps Setup (unit: real):
+// - InitDs: 500ps, dump every 0.5 ps (1000 points)
+// - FF: water (SPC/Fw) + NaCl (Joung-Cheathem)
+// - Ensemble: NVT (CSVR barostat)
+// ASE Sampling:
+// - TimeStep: 0.5 fs, dump every 0.01 ps
+// - Ensemble: NPT at 1bar/330K (berendsen barostat)
+// PiNN Training:
+// - PiNet Parameters taken from the PiNN paper:
+//   Y. Shao, M. Hellström, P. D. Mitev, L. Knijff & C. Zhang,
+//   J. Chem. Inf. Model., 2020, 60, 3.
+
 params.pinnParams = 'inputs/pinet.yml'
 params.init = 'inputs/init.{lmp,geo}'
 params.labeller = 'inputs/{label.lmp,init.geo}'
-params.maxIter = 5
-params.initSteps = 50000
-params.retrainSteps = 1000
-params.sampleSteps = 1000
-params.seed = 3
+
+// Adjustable params
+params.maxIter = 5           //no. generations
+params.seed = 3              //no. models
+params.sampleTime = 10       //resample time [ps]
+params.initSteps = 100000    //steps for initDs
+params.retrainSteps = 10000  //steps for each augDs
 
 converge = { false }
 augDs = Channel.create()
@@ -25,7 +56,8 @@ process kickoff {
 
     """
     mpirun -np $task.cpus lmp_mpi -in init.lmp
-    tips split prod.dump --log prod.log --emap '1:1,2:8,3:11,4:17' -s 'train:9,test:1'
+    tips split prod.dump --log prod.log --units real\
+         --emap '1:1,2:8,3:11,4:17' -s 'train:9,test:1'
     """
 }
 
@@ -51,7 +83,7 @@ process trainner {
     tips split ds/*.yml  -s 'train:8,eval:2' --seed $seed
     pinn_train --model-dir='model' --params=$pinnParams\
         --train-data='train.yml' --eval-data='eval.yml'\
-        --cache-data=True --batch-size=10\
+        --cache-data=True --batch-size=1\
         --train-steps=${params.initSteps+(iter-1)*params.retrainSteps}
     """
 }
@@ -91,12 +123,13 @@ process sampler {
     atoms.set_calculator(calc)
     MaxwellBoltzmannDistribution(atoms, 330.*units.kB)
     dt = 0.5 * units.fs
+    steps = int($params.sampleTime*1e3*units.fs/dt)
     dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
                       taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
-    interval=10 #int(5*units.fs/dt)
+    interval = int(0.01e3*units.fs/dt)
     dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
     dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
-    dyn.run($params.sampleSteps)
+    dyn.run(steps)
     write('restart.xyz', atoms)
     """
 }
@@ -140,9 +173,9 @@ process filter {
     output:
     tuple val({iter}), val({converge()}), path('filtered.{tfr,yml}') into filteredDs
 
-    script:
+    script:// energy: 10 meV; force: 100 meV/A
     """
-    tips filter */label.xyz -a qbc -et 'e:0.1,f:0.1' -o filtered
+    tips filter */label.xyz -a qbc -et 'e:0.01,f:0.1' -o filtered
     """
 }
 
@@ -164,7 +197,8 @@ process labeller {
     mkdir aug
     tips convert filtered.yml -o filtered -of 'lammps' --emap '1:1,8:2,11:3,17:4'
     mpirun -np $task.cpus lmp_mpi -in label.lmp
-    tips split label.dump --log label.log -s 'aug/train:0.9,test:0.1' --emap '1:1,2:8,3:11,4:17'
+    tips split label.dump --log label.log --units real\
+         -s 'aug/train:0.9,test:0.1' --emap '1:1,2:8,3:11,4:17'
     tips merge old/train.yml aug/train.yml -o train
     """
 }

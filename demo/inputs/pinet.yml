@@ -8,8 +8,8 @@ model:
       11: 0.0
       17: 0.0
     e_loss_multiplier: 10
-    e_scale: 27.21
-    e_unit: 27.21
+    e_scale: 1
+    e_unit: 1
     f_loss_multiplier: 100
     log_e_per_atom: true
     no_force_comp: 10
@@ -23,7 +23,7 @@ network:
     depth: 5
     n_basis: 10
     basis_type: gaussian
-    atom_types: [1, 8, 17, 23]
+    atom_types: [1, 8, 11, 17]
     ii_nodes: [16, 16, 16, 16]
     pp_nodes: [16, 16, 16, 16]
     pi_nodes: [16]
