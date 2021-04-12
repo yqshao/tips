@@ -5,23 +5,26 @@ import contextlib
 import io
 import sys
 
-def read(filename, format='auto', log=None, emap=None):
+def read(filename, format='auto', log=None, emap=None, units='real'):
     if filename.endswith('.yml'): #pinn handels yaml
         ds = pinn_reader(filename)
     else: #ase handels the rest
-        ds = map(atoms2dict, iread(filename))
+        kwargs = {}
+        if filename.endswith('dump'): kwargs['units']=units
+        ds = map(atoms2dict, iread(filename, **kwargs))
     if emap is not None:
         emap = {int(s.split(':')[0]):int(s.split(':')[1]) for s in emap.split(',')}
         map_elems = lambda data: dict(data, elems=[emap[e] for e in data['elems']])
         ds = map(map_elems, ds)
     if log is not None:
         update_energy = lambda struct, energy: dict(struct, e_data=energy)
-        energies = read_lammps_log(log)
+        energies = read_lammps_log(log, units=units )
         ds = map(update_energy, ds, energies)
     return ds
 
-def read_lammps_log(lammpsLog):
+def read_lammps_log(lammpsLog, units):
     """"Read lammps log file, for now we collect only TotEng"""
+    from ase.calculators.lammps import convert
     with open(lammpsLog) as f:
         for line in f:
             if 'TotEng' in line:
@@ -29,7 +32,7 @@ def read_lammps_log(lammpsLog):
                 break
         for line in f:
             if not line.startswith('Loop'):
-                yield float(line.split()[idx])
+                yield convert(float(line.split()[idx]), 'energy', units, 'ASE')
             else:
                 break
 

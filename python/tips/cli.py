@@ -17,12 +17,13 @@ def version():
 @click.command(name='convert', context_settings=CONTEXT_SETTINGS, short_help='convert datasets')
 @click.argument('filename')
 @click.option('--log', metavar='', default=None, help='lammps log (for energies)')
+@click.option('--units', metavar='', default=None, help='lammps units')
 @click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-def convertds(filename, log, format, output, oformat, emap):
-    dataset = read(filename, format=format, log=log, emap=emap)
+def convertds(filename, log, units, format, output, oformat, emap):
+    dataset = read(filename, format=format, log=log, emap=emap, units=units)
     writer = get_writer(output, format=oformat)
     with click.progressbar(dataset, show_pos=True, bar_template='Converting: %(info)s structures.') as ds:
         for datum in ds:
@@ -32,15 +33,16 @@ def convertds(filename, log, format, output, oformat, emap):
 @click.command(name='split', context_settings=CONTEXT_SETTINGS, short_help='split datasets')
 @click.argument('filename')
 @click.option('--log', metavar='', default=None, help='lammps log (for energies)')
+@click.option('--units', metavar='', default=None, help='lammps units')
 @click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
 @click.option('-s', '--splits', metavar='', default='train:8,test:2', help='name and ratio of splits')
 @click.option('--shuffle', metavar='', default=True, help='shuffle the dataset')
 @click.option('--seed', metavar='', default='0',  type=int, help='seed for random number (int)')
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-def splitds(filename, log, format, splits, shuffle, seed, oformat, emap):
+def splitds(filename, log, units, format, splits, shuffle, seed, oformat, emap):
     import random, itertools, math, time
-    dataset = read(filename, format=format, log=log, emap=emap)
+    dataset = read(filename, format=format, log=log, emap=emap, units=units)
     dataset, ds4count = itertools.tee(dataset)
     count = sum(1 for _ in ds4count)
     writers = [get_writer(s.split(':')[0], format=oformat) for s in splits.split(',')]
@@ -57,6 +59,9 @@ def splitds(filename, log, format, splits, shuffle, seed, oformat, emap):
 
 @click.command(name='filter', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
 @click.argument('filename', nargs=-1)
+@click.option('--log', metavar='', default=None, help='lammps log (for energies)')
+@click.option('--units', metavar='', default=None, help='lammps units')
+@click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
@@ -65,7 +70,7 @@ def splitds(filename, log, format, splits, shuffle, seed, oformat, emap):
 @click.option('-ef', '--error-file', metavar='', default=None, help='error file')
 @click.option('-ft', '--frac-tol', metavar='', default=None, help='fraction tolerance')
 @click.option('-fp', '--fingerprint', metavar='', default=None, help='fingerprint name')
-def filterds(filename, output, format, oformat, algo, error_tol, error_file, frac_tol, fingerprint):
+def filterds(filename, log, units, emap, format, output, oformat, algo, error_tol, error_file, frac_tol, fingerprint):
     """\b
     Algorithms available:
     - 'naive': filter by the error tolerance
@@ -85,7 +90,7 @@ def filterds(filename, output, format, oformat, algo, error_tol, error_file, fra
     import numpy as np
     writer = get_writer(output, format=oformat)
     if algo=='qbc':
-        ds = [read(fname, format=format) for fname in filename]
+        ds = [read(fname, format=format, log=log, emap=emap, units=units) for fname in filename]
         tols = {s.split(':')[0]: float(s.split(':')[1]) for s in error_tol.split(',')}
         for data in zip(*ds):
             for k, tol in tols.items():
@@ -98,13 +103,12 @@ def filterds(filename, output, format, oformat, algo, error_tol, error_file, fra
 
 @click.command(name='merge', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
 @click.argument('filename', nargs=-1)
-@click.option('-f', '--format', metavar='', default='auto', help='input format')
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-def mergeds(filename, output, format, oformat):
+def mergeds(filename, output, oformat):
     writer = get_writer(output, format=oformat)
     for fname in filename:
-        ds = read(fname, format=format)
+        ds = read(fname, format='pinn')
         for data in ds:
             writer.add(data)
     writer.finalize()
