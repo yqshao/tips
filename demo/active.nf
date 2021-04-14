@@ -18,11 +18,11 @@
 
 // Parameters (fixed or from input)
 // Lammps Setup (unit: real):
-// - InitDs: 500ps, dump every 0.5 ps (1000 points)
+// - InitDs: 100ps, dump every 0.1 ps (1000 points)
 // - FF: water (SPC/Fw) + NaCl (Joung-Cheathem)
 // - Ensemble: NVT (CSVR barostat)
 // ASE Sampling:
-// - TimeStep: 0.5 fs, dump every 0.01 ps
+// - TimeStep: 0.5 fs, dump every step
 // - Ensemble: NPT at 1bar/330K (berendsen barostat)
 // PiNN Training:
 // - PiNet Parameters taken from the PiNN paper:
@@ -34,11 +34,11 @@ params.init = 'inputs/init.{lmp,geo}'
 params.labeller = 'inputs/{label.lmp,init.geo}'
 
 // Adjustable params
-params.maxIter = 5           //no. generations
+params.maxIter = 8           //no. generations
 params.seed = 3              //no. models
-params.sampleTime = 10       //resample time [ps]
-params.initSteps = 100000    //steps for initDs
-params.retrainSteps = 10000  //steps for each augDs
+params.sampleTime = 1        //resample time [ps]
+params.initSteps = 200000    //steps for initDs
+params.retrainSteps = 50000  //steps for each augDs
 
 converge = { false }
 augDs = Channel.create()
@@ -81,9 +81,10 @@ process trainner {
     script:
     """
     tips split ds/*.yml  -s 'train:8,eval:2' --seed $seed
+    ${iter>1? "cp -r ${file("models/iter${iter-1}/seed$seed/model")} model": ""}
     pinn_train --model-dir='model' --params=$pinnParams\
         --train-data='train.yml' --eval-data='eval.yml'\
-        --cache-data=True --batch-size=1\
+        --cache-data=True --batch-size=1 --shuffle-buffer=500\
         --train-steps=${params.initSteps+(iter-1)*params.retrainSteps}
     """
 }
@@ -104,7 +105,6 @@ process sampler {
 
     output:
     tuple val(iter), file('aug.traj') into sampledDs
-    file 'restart.xyz' into restart
 
     script:
     """
@@ -126,7 +126,7 @@ process sampler {
     steps = int($params.sampleTime*1e3*units.fs/dt)
     dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
                       taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
-    interval = int(0.01e3*units.fs/dt)
+    interval = 1 #int(0.001e3*units.fs/dt)
     dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
     dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
     dyn.run(steps)
@@ -150,17 +150,21 @@ process label4qbc {
     script:
     """
     #!/usr/bin/env python3
-    import pinn
+    import pinn, yaml
     import tensorflow as tf
     from ase import units
     from ase.io import read, write
-
-    calc = pinn.get_calc("$model")
+    with open('$model/params.yml') as f:
+        params = yaml.safe_load(f)
+        params['model_dir'] = '$model'
+    calc = pinn.get_calc(params)
     traj = read("$traj", index=':')
-    for atoms in traj:
-        atoms.set_calculator(calc)
-        atoms.get_potential_energy()
-    write('label.xyz', traj)
+    with open('label.xyz', 'w') as f:
+        for atoms in traj:
+            atoms.wrap()
+            atoms.set_calculator(calc)
+            atoms.get_potential_energy()
+            write(f, atoms, format='extxyz', append='True')
     """
 }
 
@@ -180,7 +184,7 @@ process filter {
 }
 
 process labeller {
-    publishDir "dataset/aug$iter"
+    publishDir "datasets/aug$iter"
     label 'lammps'
 
     input:
@@ -191,14 +195,33 @@ process labeller {
     output:
     tuple val(iter), path("train.{tfr,yml}") into augDs
     path "test.{tfr,yml}"
+    file 'restart.xyz' into restart
 
     script:
     """
     mkdir aug
     tips convert filtered.yml -o filtered -of 'lammps' --emap '1:1,8:2,11:3,17:4'
     mpirun -np $task.cpus lmp_mpi -in label.lmp
-    tips split label.dump --log label.log --units real\
-         -s 'aug/train:0.9,test:0.1' --emap '1:1,2:8,3:11,4:17'
+    sed -i '/WARNING/d' label.log
+    # hotfixes, those are to be implemented in the sampler instead
+    python3 << EOF
+    import numpy as np
+    from ase import Atoms
+    from ase.io import write
+    from tips.io import read, get_writer
+    writer = get_writer('label', format='pinn')
+    ds = read('label.dump', log='label.log', units='real', emap='1:1,2:8,3:11,4:17')
+    restart = False
+    for data in ds:
+        if not (np.abs(data['f_data']).max()>50 or data['e_data']>50):
+            writer.add(data)
+            restart = data
+    if restart:
+        write('restart.xyz', Atoms(restart['elems'], positions=restart['coord'], cell=restart['cell'], pbc=True))
+    writer.finalize()
+    EOF
+    tips split label.yml -s 'aug/train:0.9,test:0.1'
+    # --log label.log --units real --emap '1:1,2:8,3:11,4:17'
     tips merge old/train.yml aug/train.yml -o train
     """
 }

@@ -24,14 +24,14 @@ neighbor        3.0 bin
 
 # Simulation setup
 variable  my_time_equ         equal   0.1  # ns
-variable  my_time_pro         equal   0.5  # ns
+variable  my_time_pro         equal   0.1  # ns
 variable  my_temp             equal   323  # Kelvin
 variable  my_temp_damp        equal   ${my_step}*200  # From CSVR paper
 variable  n_steps_equ         equal   ${my_time_equ}/${my_step}*1e3
 variable  n_steps_pro         equal   ${my_time_pro}/${my_step}*1e3
 
 # IO setup
-variable  my_dump             equal   0.5  # ps
+variable  my_dump             equal   0.1  # ps
 variable  my_thermo           equal   ${my_dump}  # ps
 variable  n_thermo            equal   ${my_thermo}/${my_step}
 variable  n_dump              equal   ${my_dump}/${my_step}
