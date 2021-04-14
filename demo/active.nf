@@ -34,7 +34,7 @@ params.init = 'inputs/init.{lmp,geo}'
 params.labeller = 'inputs/{label.lmp,init.geo}'
 
 // Adjustable params
-params.maxIter = 8           //no. generations
+params.maxIter = 10          //no. generations
 params.seed = 3              //no. models
 params.sampleTime = 1        //resample time [ps]
 params.initSteps = 200000    //steps for initDs
@@ -81,11 +81,11 @@ process trainner {
     script:
     """
     tips split ds/*.yml  -s 'train:8,eval:2' --seed $seed
-    ${iter>1? "cp -r ${file("models/iter${iter-1}/seed$seed/model")} model": ""}
-    pinn_train --model-dir='model' --params=$pinnParams\
+    ${iter>1? "cp -rL ${file("models/iter${iter-1}/seed$seed/model")} model": "mkdir model && cp $pinnParams model/params.yml"}
+    pinn_train --model-dir='model' --params='model/params.yml'\
         --train-data='train.yml' --eval-data='eval.yml'\
         --cache-data=True --batch-size=1 --shuffle-buffer=500\
-        --train-steps=${params.initSteps+(iter-1)*params.retrainSteps}
+        --train-steps=${params.initSteps+(iter-1)*params.retrainSteps} ${iter==1? "--regen-dress": ""}
     """
 }
 
@@ -213,9 +213,10 @@ process labeller {
     ds = read('label.dump', log='label.log', units='real', emap='1:1,2:8,3:11,4:17')
     restart = False
     for data in ds:
-        if not (np.abs(data['f_data']).max()>50 or data['e_data']>50):
+        if not (np.abs(data['f_data']).max()>10 or data['e_data']>-30):
             writer.add(data)
-            restart = data
+            if not (np.abs(data['f_data']).max()>4):
+                restart = data
     if restart:
         write('restart.xyz', Atoms(restart['elems'], positions=restart['coord'], cell=restart['cell'], pbc=True))
     writer.finalize()
