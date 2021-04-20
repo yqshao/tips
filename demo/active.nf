@@ -29,82 +29,117 @@
 //   Y. Shao, M. Hellström, P. D. Mitev, L. Knijff & C. Zhang,
 //   J. Chem. Inf. Model., 2020, 60, 3.
 
+// Adjustable params
 params.pinnParams = 'inputs/pinet.yml'
 params.init = 'inputs/init.{lmp,geo}'
 params.labeller = 'inputs/{label.lmp,init.geo}'
-
-// Adjustable params
+params.sampleInit = 'inputs/init.xyz'
 params.maxIter = 10          //no. generations
-params.seed = 3              //no. models
+params.seed = 2              //no. models
 params.sampleTime = 1        //resample time [ps]
 params.initSteps = 200000    //steps for initDs
 params.retrainSteps = 50000  //steps for each augDs
 
-converge = { false }
-augDs = Channel.create()
+// Create the output channels
+initDs = Channel.create()   // for training sets (iter, ds)
+trainDs = Channel.create()   // for training sets (iter, ds)
+models = Channel.create()   // for trained models (iter, seed, modelDir)
+trajs = Channel.create()    // for trajs
+ckpts = Channel.create()
+restart = Channel.create()  // restart for sampling
+ds4label = Channel.create() // ds to be labelled
+aug4combine = Channel.create() // ds to be labelled
 
+// Connecting the channels
+Channel.of(1..params.seed)
+    .map{[1, it, file(params.pinnParams)]}
+    .mix(ckpts)
+    .set{ckpt4train}
+Channel.of([2, file(params.sampleInit)])
+    .mix(restart.map{iter,restart->[iter+1,restart]})
+    .until{it[0]>params.maxIter}
+    .set{init4sample}
+initDs.map{[1, it]}
+    .mix(trainDs)
+    .tap{ds4combine}
+    .combine(Channel.of(1..params.seed)).map{it -> it[[0,2,1]]}
+    .tap{ds4train}
+models
+    .map{iter, seed, model -> [iter+1, seed, model]}
+    .until{it[0]>params.maxIter}
+    .tap(ckpts)
+    .branch {
+        md: it[1]==1
+            return [it[0], it[2]]
+        other: true}
+    .set{model4qbc}
+trajs
+    .tap{qbcRef}
+    .combine(Channel.of(2..params.seed)).map{it -> it[[0,2,1]]}
+    .join(model4qbc.other, by: [0,1])
+    .set{qbcInp}
+ds4combine
+    .map{iter,ds -> [iter+1, ds]}
+    .until{it[0]>params.maxIter}
+    .join(aug4combine)
+    .map{iter, old, aug -> [iter, old+aug]}
+    .tap(trainDs)
+
+// Inputs for processes
+trainInp = ckpt4train.join(ds4train, by: [0,1])
+sampleInp = init4sample.join(model4qbc.md)
+
+// Proceses
 process kickoff {
-    publishDir 'datasets/init'
+    publishDir 'datasets/'
     label 'lammps'
 
     input:
     path inp from Channel.fromPath(params.init).collect()
 
     output:
-    path "train.{tfr,yml}" into initDs
-    path "test.{tfr,yml}"
+    path "train_1.{tfr,yml}"  into initDs
+    path "test_1.{tfr,yml}"
 
     """
     mpirun -np $task.cpus lmp_mpi -in init.lmp
     tips split prod.dump --log prod.log --units real\
-         --emap '1:1,2:8,3:11,4:17' -s 'train:9,test:1'
+         --emap '1:1,2:8,3:11,4:17' -s 'train_1:9,test_1:1'
     """
 }
 
-initDs.map({[1, it]})
-    .mix(augDs.map {iter,ds -> [iter+1, ds]}
-         .until{iter, ds -> iter > params.maxIter})
-    .into {ds4train; ds4aug}
-
 process trainner {
     publishDir "models/iter$iter/seed$seed"
+    stageInMode 'copy'
     label 'pinn'
 
     input:
-    tuple val(iter), path(dataset, stageAs: 'ds/*') from ds4train
-    each seed from Channel.from(1..params.seed)
-    each pinnParams from Channel.fromPath(params.pinnParams)
+    tuple val(iter), val(seed), path(model), path(dataset, stageAs: 'ds/*') from trainInp
 
     output:
-    tuple val(iter), val(seed), path('model', type:'dir') into models
+    tuple val(iter), val(seed), path('model/', type:'dir') into models
 
     script:
     """
     tips split ds/*.yml  -s 'train:8,eval:2' --seed $seed
-    ${iter>1? "cp -rL ${file("models/iter${iter-1}/seed$seed/model")} model": "mkdir model && cp $pinnParams model/params.yml"}
-    pinn_train --model-dir='model' --params='model/params.yml'\
+    [ ! -f model/params.yml ] && { mkdir -p model; cp $model model/params.yml; }
+    pinn_train --model-dir='model' --params-file='model/params.yml'\
         --train-data='train.yml' --eval-data='eval.yml'\
         --cache-data=True --batch-size=1 --shuffle-buffer=500\
-        --train-steps=${params.initSteps+(iter-1)*params.retrainSteps} ${iter==1? "--regen-dress": ""}
+        --train-steps=${params.initSteps+(iter-1)*params.retrainSteps}\
+        ${iter==1? "--regen-dress": ""}
     """
 }
 
-restart = Channel.create()
-models4qbc = Channel.create()
-models4sample = Channel.create()
-models.tap( models4qbc ).filter { it[1] == 1 }.tap( models4sample )
-initStruct = Channel.value('').mix(restart)
-
 process sampler {
-    publishDir "trajs/iter$iter"
+    publishDir "trajs/iter$iter/seed1"
     label 'pinn'
 
     input:
-    tuple val(iter), val(seed), path(model) from models4sample
-    file restart from initStruct
+    tuple val(iter), path(init), path(model)  from sampleInp
 
     output:
-    tuple val(iter), file('aug.traj') into sampledDs
+    tuple val(iter), file('aug.traj') into trajs
 
     script:
     """
@@ -119,7 +154,7 @@ process sampler {
     from ase.md.nptberendsen import NPTBerendsen
 
     calc = pinn.get_calc("$model/params.yml")
-    atoms = read(${restart.size()>0?"'$restart'":"'${file("inputs/init.xyz")}'"})
+    atoms = read("$init")
     atoms.set_calculator(calc)
     MaxwellBoltzmannDistribution(atoms, 330.*units.kB)
     dt = 0.5 * units.fs
@@ -130,22 +165,18 @@ process sampler {
     dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
     dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
     dyn.run(steps)
-    write('restart.xyz', atoms)
     """
 }
 
-// [[iter, traj], [iter, seed, model]] -> [iter, seed, traj, model]
-toQbc = sampledDs.cross(models4qbc).map {[it[0][0], it[1][1], it[0][1], it[1][2]]}
-
-process label4qbc {
+process pinnlabel {
     publishDir "trajs/iter$iter/seed$seed"
     label 'pinn'
 
     input:
-    tuple val(iter), val(seed), path(traj), path(model) from toQbc
+    tuple val(iter), val(seed), path(traj), path(model) from qbcInp
 
     output:
-    tuple val(iter), file('label.xyz') into ds4qbc
+    tuple val(iter), file('label.xyz') into qbcOther
 
     script:
     """
@@ -172,30 +203,29 @@ process filter {
     label 'pinn'
 
     input:
-    tuple val(iter), path('ds??/label.xyz') from ds4qbc.buffer(size: params.seed).map {[it[0][0], it.collect {it[1]} ]}
+    tuple val(iter), path('ds??/*') from qbcRef.mix(qbcOther).groupTuple(size:params.seed)
 
     output:
-    tuple val({iter}), val({converge()}), path('filtered.{tfr,yml}') into filteredDs
+    tuple val{iter}, path('filtered.{tfr,yml}') into filteredDs
 
     script:// energy: 10 meV; force: 100 meV/A
     """
-    tips filter */label.xyz -a qbc -et 'e:0.01,f:0.1' -o filtered
+    tips filter ds*/* -a qbc -et 'e:0.01,f:0.1' -o filtered
     """
 }
 
-process labeller {
-    publishDir "datasets/aug$iter"
+process lmplabel {
+    publishDir "datasets/", pattern: "*.{tfr,yml}"
     label 'lammps'
 
     input:
-    tuple val(iter), path(filterd) from filteredDs.until({it[1]}).map({[it[0],it[2]]})
+    tuple val(iter), path(ds) from filteredDs
     path labeller from Channel.fromPath(params.labeller).collect()
-    path augDs, stageAs: 'old/*' from ds4aug.map {it[1]}
 
     output:
-    tuple val(iter), path("train.{tfr,yml}") into augDs
-    path "test.{tfr,yml}"
-    file 'restart.xyz' into restart
+    tuple val(iter), path("train_$iter.{tfr,yml}") into aug4combine
+    tuple val{iter}, path('restart.xyz') into restart
+    path "test_$iter.{tfr,yml}"
 
     script:
     """
@@ -213,16 +243,14 @@ process labeller {
     ds = read('label.dump', log='label.log', units='real', emap='1:1,2:8,3:11,4:17')
     restart = False
     for data in ds:
-        if not (np.abs(data['f_data']).max()>10 or data['e_data']>-30):
+        if True:#not (np.abs(data['f_data']).max()>10 or data['e_data']>-30):
             writer.add(data)
-            if not (np.abs(data['f_data']).max()>4):
+            if True:#not (np.abs(data['f_data']).max()>4):
                 restart = data
     if restart:
         write('restart.xyz', Atoms(restart['elems'], positions=restart['coord'], cell=restart['cell'], pbc=True))
     writer.finalize()
     EOF
-    tips split label.yml -s 'aug/train:0.9,test:0.1'
-    # --log label.log --units real --emap '1:1,2:8,3:11,4:17'
-    tips merge old/train.yml aug/train.yml -o train
+    tips split label.yml -s 'train_$iter:0.9,test_$iter:0.1'
     """
 }
