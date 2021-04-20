@@ -15,7 +15,7 @@ def version():
     click.echo(f'TIPS version: {tips.__version__}')
 
 @click.command(name='convert', context_settings=CONTEXT_SETTINGS, short_help='convert datasets')
-@click.argument('filename')
+@click.argument('filename', nargs=-1)
 @click.option('--log', metavar='', default=None, help='lammps log (for energies)')
 @click.option('--units', metavar='', default=None, help='lammps units')
 @click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
@@ -23,15 +23,16 @@ def version():
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
 def convertds(filename, log, units, format, output, oformat, emap):
-    dataset = read(filename, format=format, log=log, emap=emap, units=units)
     writer = get_writer(output, format=oformat)
-    with click.progressbar(dataset, show_pos=True, bar_template='Converting: %(info)s structures.') as ds:
-        for datum in ds:
-            writer.add(datum)
+    for fname in filename:
+        dataset = read(fname, format=format, log=log, emap=emap, units=units)
+        with click.progressbar(dataset, show_pos=True, bar_template='Converting: %(info)s structures.') as ds:
+            for datum in ds:
+                writer.add(datum)
     writer.finalize()
 
 @click.command(name='split', context_settings=CONTEXT_SETTINGS, short_help='split datasets')
-@click.argument('filename')
+@click.argument('filename', nargs=-1)
 @click.option('--log', metavar='', default=None, help='lammps log (for energies)')
 @click.option('--units', metavar='', default=None, help='lammps units')
 @click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
@@ -42,19 +43,20 @@ def convertds(filename, log, units, format, output, oformat, emap):
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
 def splitds(filename, log, units, format, splits, shuffle, seed, oformat, emap):
     import random, itertools, math, time
-    dataset = read(filename, format=format, log=log, emap=emap, units=units)
-    dataset, ds4count = itertools.tee(dataset)
-    count = sum(1 for _ in ds4count)
     writers = [get_writer(s.split(':')[0], format=oformat) for s in splits.split(',')]
     weights = [float(s.split(':')[1]) for s in splits.split(',')]
-    writers = sum([[writer]*math.ceil(count*weight/sum(weights))
-                   for writer, weight in zip(writers, weights)],[])
-    if shuffle:
-        random.seed(seed)
-        random.shuffle(writers)
-    with click.progressbar(dataset, length=count, show_pos=True) as ds:
-        for datum, writer in zip(ds, writers):
-            writer.add(datum)
+    for fname in filename:
+        dataset = read(fname, format=format, log=log, emap=emap, units=units)
+        dataset, ds4count = itertools.tee(dataset)
+        count = sum(1 for _ in ds4count)
+        writerList = sum([[writer]*math.ceil(count*weight/sum(weights))
+                          for writer, weight in zip(writers, weights)],[])
+        if shuffle:
+            random.seed(seed)
+            random.shuffle(writerList)
+        with click.progressbar(dataset, length=count, show_pos=True) as ds:
+            for datum, writer in zip(ds, writerList):
+                writer.add(datum)
     [writer.finalize() for writer in writers]
 
 @click.command(name='filter', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
