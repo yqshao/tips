@@ -42,7 +42,8 @@ params.initSteps = 200000    //steps for initDs
 params.retrainSteps = 50000  //steps for each augDs
 // Filters
 params.qbcTags = '-vmax "!e:0.01,!f:0.01"'
-params.lmpTags = '-vmax "e:-30" -amax "f:5"'
+params.lmpTags = '-vmax "e:-20" -amax "f:10"'
+params.restartTags = '-vmax "e:-42" -amax "f:4"'
 
 // Create the output channels
 initDs = Channel.create()   // for training sets (iter, ds)
@@ -171,7 +172,10 @@ process sampler {
     interval = int($params.sampleInterv*1e3*units.fs/dt)
     dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
     dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
-    dyn.run(steps)
+    try:
+        dyn.run(steps)
+    except:
+        pass
     traj = read('aug.traj', index=':')
     [atoms.wrap() for atoms in traj]
     write('ref.xyz', traj)
@@ -228,7 +232,7 @@ process filter {
 }
 
 process lmplabel {
-    publishDir "datasets/", pattern: "*.{tfr,yml}"
+    publishDir "datasets/", pattern: "{train,test}*.xyz"
     publishDir "trajs/iter$iter", pattern: "label.xyz"
     label 'lammps'
 
@@ -240,15 +244,17 @@ process lmplabel {
     tuple val(iter), path("train_${iter}.xyz") into aug4combine
     tuple val{iter}, path('restart.xyz') into restart
     path "test_${iter}.xyz"
+    path "*label.xyz"
 
     script:
     """
     tips convert $ds -o filtered -of 'lammps' --emap '1:1,8:2,11:3,17:4'
-    mpirun -np $task.cpus lmp_mpi -in label.lmp
+    mpirun -np $task.cpus lmp_mpi -in label.lmp || echo LAMMPS aborted
     sed -i '/WARNING/d' label.log
     tips filter label.dump --log label.log -o label -of xyz\
         --emap '1:1,2:8,3:11,4:17' --units real $params.lmpTags
-    tac label.xyz | grep -m1 -A1 -B999 Lattice | tac > restart.xyz
+    tips filter label.xyz -o tmp -of xyz $params.restartTags
+    tac tmp.xyz | grep -m1 -A1 -B999 Lattice | tac > restart.xyz
     tips split label.xyz -s 'train_$iter:0.9,test_$iter:0.1' -of xyz
     """
 }

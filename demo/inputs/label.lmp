@@ -23,6 +23,7 @@ neighbor        3.0 bin
 variable  dump_format         string  "id type x y z fx fy fz"
 
 thermo  1
+thermo_modify flush yes
 dump    1 all custom 1 label.dump ${dump_format}
 log     label.log
 rerun   filtered.dump dump x y z
