@@ -111,13 +111,18 @@ def filterds(filename, log, units, emap, format, output, oformat, **kwargs):
     import numpy as np
     writer = get_writer(output, format=oformat)
     filterFns = {
-        'val_max': lambda data, tag, tol: np.any(data[f'{tag}_data']>tol),
-        'val_min': lambda data, tag, tol: np.any(data[f'{tag}_data']<tol),
-        'abs_max': lambda data, tag, tol: np.any(np.abs(data[f'{tag}_data'])>tol),
-        'abs_min': lambda data, tag, tol: np.any(np.abs(data[f'{tag}_data'])<tol)}
-    fnList = [lambda data: filterFns[k](data, tag, float(tol))
-              for k, v in kwargs.items() if v
-              for tag, tol in map(lambda x: x.split(':'), v.split(','))]
+        'val_max': lambda data, tol: np.any(data>tol),
+        'val_min': lambda data, tol: np.any(data<tol),
+        'abs_max': lambda data, tol: np.any(np.abs(data)>tol),
+        'abs_min': lambda data, tol: np.any(np.abs(data)<tol)}
+    def filter_fn(data, key, tag, tol):
+        if tag.startswith('!'):
+            return not filterFns[key](data[f"{tag[1:]}_data"], tol)
+        else:
+            return filterFns[key](data[f"{tag}_data"], tol)
+    fnList = [lambda data: filter_fn(data, key, tag, float(tol))
+              for key, val in kwargs.items() if val
+              for tag, tol in map(lambda x: x.split(':'), val.split(','))]
     for fname in filename:
         ds = read(fname, format=format, emap=emap, units=units)
         for data in ds:

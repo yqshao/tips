@@ -41,7 +41,7 @@ params.sampleInterv = 0.005  //resample every [ps]
 params.initSteps = 200000    //steps for initDs
 params.retrainSteps = 50000  //steps for each augDs
 // Filters
-params.qbcTags = '-vmin "e:0.01,f:0.01"'
+params.qbcTags = '-vmax "!e:0.01,!f:0.01"'
 params.lmpTags = '-vmax "e:-30" -amax "f:5"'
 
 // Create the output channels
