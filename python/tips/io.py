@@ -72,6 +72,30 @@ def get_writer(filename, format='pinn', **kwargs):
         return pinn_writer(f'{filename}.yml', spec)
     elif format == 'lammps':
         return lammps_writer(f'{filename}.dump')
+    elif format == 'xyz' or format == 'extxyz':
+        return extxyz_writer(f'{filename}.xyz')
+    else:
+        raise NotImplementedError
+
+
+class extxyz_writer():
+    def __init__(self, fname):
+        self.f = open(fname, 'w')
+
+    def add(self, data):
+        from ase import Atoms
+        from ase.io import write
+        from ase.calculators.singlepoint import SinglePointCalculator
+        atoms = Atoms(data['elems'], cell=data['cell'], positions=data['coord'])
+        atoms.calc = SinglePointCalculator(
+            atoms=atoms,
+            energy=data['e_data'],
+            forces=data['f_data'])
+        atoms.pbc=True
+        write(self.f, atoms, format='extxyz', append='True')
+
+    def finalize(self):
+        self.f.close()
 
 
 class lammps_writer():
@@ -97,6 +121,7 @@ ITEM: ATOMS id type x y z
             in enumerate(zip(data['elems'], data['coord'])))
     def finalize(self):
         self.f.close()
+
 
 class pinn_writer():
     def __init__(self, fname, spec):

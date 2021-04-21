@@ -59,6 +59,33 @@ def splitds(filename, log, units, format, splits, shuffle, seed, oformat, emap):
                 writer.add(datum)
     [writer.finalize() for writer in writers]
 
+@click.command(name='qbc', context_settings=CONTEXT_SETTINGS, short_help='query by committee')
+@click.argument('filename', nargs=-1)
+@click.option('--log', metavar='', default=None, help='lammps log (for energies)')
+@click.option('--units', metavar='', default=None, help='lammps units')
+@click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
+@click.option('-o', '--output', metavar='', default='dataset')
+@click.option('-f', '--format', metavar='', default='auto', help='input format')
+@click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
+@click.option('-t', '--tags', metavar='', default='e,f', help='tags to compute variance')
+def qbc(filename, log, units, emap, format, output, oformat, tags):
+    """Label errors according to variable across datasets
+
+    Not that energies for lammps dumps will not be handeled correctly for now
+    """
+    import numpy as np
+    writer = get_writer(output, format=oformat)
+    ds = [read(fname, format=format, emap=emap, units=units) for fname in filename]
+    for data in zip(*ds):
+        for tag in tags.split(','):
+            for other in data[1:]:
+                assert np.allclose(other['coord'],data[0]['coord']), 'Inputs does not match'
+            error = np.std([datum[f'{tag}_data'] for datum in data], axis=0)
+            data[0].update({f'{tag}_data': error})
+        writer.add(data[0])
+    writer.finalize()
+
+
 @click.command(name='filter', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
 @click.argument('filename', nargs=-1)
 @click.option('--log', metavar='', default=None, help='lammps log (for energies)')
@@ -67,41 +94,37 @@ def splitds(filename, log, units, format, splits, shuffle, seed, oformat, emap):
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-@click.option('-a', '--algo', metavar='', default='naive', help='filtering algorithm')
-@click.option('-et', '--error-tol', metavar='', default=None, help='error tolerance')
-@click.option('-ef', '--error-file', metavar='', default=None, help='error file')
-@click.option('-ft', '--frac-tol', metavar='', default=None, help='fraction tolerance')
-@click.option('-fp', '--fingerprint', metavar='', default=None, help='fingerprint name')
-def filterds(filename, log, units, emap, format, output, oformat, algo, error_tol, error_file, frac_tol, fingerprint):
+@click.option('-vmin', '--val-min', metavar='', default='', help='minimum value')
+@click.option('-vmax', '--val-max', metavar='', default='', help='maximum value')
+@click.option('-amin', '--abs-min', metavar='', default='', help='minimum absolute value')
+@click.option('-amax', '--abs-max', metavar='', default='', help='maximum absolute value')
+def filterds(filename, log, units, emap, format, output, oformat, **kwargs):
     """\b
     Algorithms available:
     - 'naive': filter by the error tolerance
-    - 'qbc': query by committee
-    - 'fps': furthest point sampling
+    - 'fps': furthest point sampling [not implemented yet]
 
-    For the naive algorithm, one of error-tol and frac-tol must be given to
-    specify the criterion of filtering. If many error labels exist, multiple
-    toleracnce can be selected with e.g. "-et energy:0.1,force:0.01".
-
-    For the qbc algorithm, a list of datasets with the SAME structures and ordering
-    is required and their standard deviation is used as the error.
-
-    For the FPS algorithm, no error file is required but a fingerprint is required
-    to specify the fingerprint/descriptor with which the distance is computed.
+    For the naive algorithm, max and min values can be specified for value or
+    absolute values, if one component exceeds the range for a data point, that
+    data point is filtered out.
     """
     import numpy as np
     writer = get_writer(output, format=oformat)
-    if algo=='qbc':
-        ds = [read(fname, format=format, log=log, emap=emap, units=units) for fname in filename]
-        tols = {s.split(':')[0]: float(s.split(':')[1]) for s in error_tol.split(',')}
-        for data in zip(*ds):
-            for k, tol in tols.items():
-                error = np.std([datum[f'{k}_data'] for datum in data], axis=0)
-                if (error>tol).any():
-                    writer.add(data[0])
-        writer.finalize()
-    else:
-        raise NotImplementedError
+    filterFns = {
+        'val_max': lambda data, tag, tol: np.any(data[f'{tag}_data']>tol),
+        'val_min': lambda data, tag, tol: np.any(data[f'{tag}_data']<tol),
+        'abs_max': lambda data, tag, tol: np.any(np.abs(data[f'{tag}_data'])>tol),
+        'abs_min': lambda data, tag, tol: np.any(np.abs(data[f'{tag}_data'])<tol)}
+    fnList = [lambda data: filterFns[k](data, tag, float(tol))
+              for k, v in kwargs.items() if v
+              for tag, tol in map(lambda x: x.split(':'), v.split(','))]
+    for fname in filename:
+        ds = read(fname, format=format, emap=emap, units=units)
+        for data in ds:
+            if not any([fn(data) for fn in fnList]):
+                writer.add(data)
+    writer.finalize()
+
 
 @click.command(name='merge', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
 @click.argument('filename', nargs=-1)
@@ -119,6 +142,7 @@ main.add_command(convertds)
 main.add_command(splitds)
 main.add_command(filterds)
 main.add_command(mergeds)
+main.add_command(qbc)
 main.add_command(version)
 
 if __name__ == '__main__':

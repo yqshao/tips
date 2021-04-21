@@ -34,11 +34,15 @@ params.pinnParams = 'inputs/pinet.yml'
 params.init = 'inputs/init.{lmp,geo}'
 params.labeller = 'inputs/{label.lmp,init.geo}'
 params.sampleInit = 'inputs/init.xyz'
-params.maxIter = 10          //no. generations
-params.seed = 2              //no. models
-params.sampleTime = 1        //resample time [ps]
+params.maxIter = 5           //no. generations
+params.seed = 3              //no. models
+params.sampleTime = 5        //resample time [ps]
+params.sampleInterv = 0.005  //resample every [ps]
 params.initSteps = 200000    //steps for initDs
 params.retrainSteps = 50000  //steps for each augDs
+// Filters
+params.qbcTags = '-vmin "e:0.01,f:0.01"'
+params.lmpTags = '-vmax "e:-30" -amax "f:5"'
 
 // Create the output channels
 initDs = Channel.create()   // for training sets (iter, ds)
@@ -82,7 +86,7 @@ ds4combine
     .map{iter,ds -> [iter+1, ds]}
     .until{it[0]>params.maxIter}
     .join(aug4combine)
-    .map{iter, old, aug -> [iter, old+aug]}
+    .map{iter, old, aug -> [iter, ([]<<old<<aug).flatten()]}
     .tap(trainDs)
 
 // Inputs for processes
@@ -91,20 +95,23 @@ sampleInp = init4sample.join(model4qbc.md)
 
 // Proceses
 process kickoff {
-    publishDir 'datasets/'
+    publishDir 'datasets/', pattern: '{train,test}_1.xyz'
+    publishDir 'trajs/iter1', pattern: 'label.xyz'
     label 'lammps'
 
     input:
     path inp from Channel.fromPath(params.init).collect()
 
     output:
-    path "train_1.{tfr,yml}"  into initDs
-    path "test_1.{tfr,yml}"
+    path "train_1.xyz"  into initDs
+    path "test_1.xyz"
+    path "label.xyz"
 
     """
     mpirun -np $task.cpus lmp_mpi -in init.lmp
-    tips split prod.dump --log prod.log --units real\
-         --emap '1:1,2:8,3:11,4:17' -s 'train_1:9,test_1:1'
+    tips convert prod.dump --log prod.log --units real\
+         --emap '1:1,2:8,3:11,4:17' -o label -of xyz
+    tips split label.xyz -s 'train_1:9,test_1:1' -of xyz
     """
 }
 
@@ -121,7 +128,7 @@ process trainner {
 
     script:
     """
-    tips split ds/*.yml  -s 'train:8,eval:2' --seed $seed
+    tips split ds/*.xyz  -s 'train:8,eval:2' --seed $seed
     [ ! -f model/params.yml ] && { mkdir -p model; cp $model model/params.yml; }
     pinn_train --model-dir='model' --params-file='model/params.yml'\
         --train-data='train.yml' --eval-data='eval.yml'\
@@ -139,7 +146,7 @@ process sampler {
     tuple val(iter), path(init), path(model)  from sampleInp
 
     output:
-    tuple val(iter), file('aug.traj') into trajs
+    tuple val(iter), file('ref.xyz') into trajs
 
     script:
     """
@@ -161,10 +168,13 @@ process sampler {
     steps = int($params.sampleTime*1e3*units.fs/dt)
     dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
                       taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
-    interval = 1 #int(0.001e3*units.fs/dt)
+    interval = int($params.sampleInterv*1e3*units.fs/dt)
     dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
     dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
     dyn.run(steps)
+    traj = read('aug.traj', index=':')
+    [atoms.wrap() for atoms in traj]
+    write('ref.xyz', traj)
     """
 }
 
@@ -176,7 +186,7 @@ process pinnlabel {
     tuple val(iter), val(seed), path(traj), path(model) from qbcInp
 
     output:
-    tuple val(iter), file('label.xyz') into qbcOther
+    tuple val(iter), file('pred.xyz') into qbcOther
 
     script:
     """
@@ -190,7 +200,7 @@ process pinnlabel {
         params['model_dir'] = '$model'
     calc = pinn.get_calc(params)
     traj = read("$traj", index=':')
-    with open('label.xyz', 'w') as f:
+    with open('pred.xyz', 'w') as f:
         for atoms in traj:
             atoms.wrap()
             atoms.set_calculator(calc)
@@ -200,57 +210,44 @@ process pinnlabel {
 }
 
 process filter {
+    publishDir "trajs/iter$iter"
     label 'pinn'
 
     input:
     tuple val(iter), path('ds??/*') from qbcRef.mix(qbcOther).groupTuple(size:params.seed)
 
     output:
-    tuple val{iter}, path('filtered.{tfr,yml}') into filteredDs
+    tuple val{iter}, path('qbc.xyz') into qbcDs
 
-    script:// energy: 10 meV; force: 100 meV/A
+    script:
     """
-    tips filter ds*/* -a qbc -et 'e:0.01,f:0.1' -o filtered
+    tips qbc ds*/* -o tmp -of xyz
+    tips filter tmp.xyz $params.qbcTags -o qbc -of xyz
     """
 }
 
 process lmplabel {
     publishDir "datasets/", pattern: "*.{tfr,yml}"
+    publishDir "trajs/iter$iter", pattern: "label.xyz"
     label 'lammps'
 
     input:
-    tuple val(iter), path(ds) from filteredDs
+    tuple val(iter), path(ds) from qbcDs
     path labeller from Channel.fromPath(params.labeller).collect()
 
     output:
-    tuple val(iter), path("train_$iter.{tfr,yml}") into aug4combine
+    tuple val(iter), path("train_${iter}.xyz") into aug4combine
     tuple val{iter}, path('restart.xyz') into restart
-    path "test_$iter.{tfr,yml}"
+    path "test_${iter}.xyz"
 
     script:
     """
-    mkdir aug
-    tips convert filtered.yml -o filtered -of 'lammps' --emap '1:1,8:2,11:3,17:4'
+    tips convert $ds -o filtered -of 'lammps' --emap '1:1,8:2,11:3,17:4'
     mpirun -np $task.cpus lmp_mpi -in label.lmp
     sed -i '/WARNING/d' label.log
-    # hotfixes, those are to be implemented in the sampler instead
-    python3 << EOF
-    import numpy as np
-    from ase import Atoms
-    from ase.io import write
-    from tips.io import read, get_writer
-    writer = get_writer('label', format='pinn')
-    ds = read('label.dump', log='label.log', units='real', emap='1:1,2:8,3:11,4:17')
-    restart = False
-    for data in ds:
-        if True:#not (np.abs(data['f_data']).max()>10 or data['e_data']>-30):
-            writer.add(data)
-            if True:#not (np.abs(data['f_data']).max()>4):
-                restart = data
-    if restart:
-        write('restart.xyz', Atoms(restart['elems'], positions=restart['coord'], cell=restart['cell'], pbc=True))
-    writer.finalize()
-    EOF
-    tips split label.yml -s 'train_$iter:0.9,test_$iter:0.1'
+    tips filter label.dump --log label.log -o label -of xyz\
+        --emap '1:1,2:8,3:11,4:17' --units real $params.lmpTags
+    tac label.xyz | grep -m1 -A1 -B999 Lattice | tac > restart.xyz
+    tips split label.xyz -s 'train_$iter:0.9,test_$iter:0.1' -of xyz
     """
 }
