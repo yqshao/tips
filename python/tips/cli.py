@@ -120,11 +120,11 @@ def filterds(filename, log, units, emap, format, output, oformat, **kwargs):
             return not filterFns[key](data[f"{tag[1:]}_data"], tol)
         else:
             return filterFns[key](data[f"{tag}_data"], tol)
-    fnList = [lambda data: filter_fn(data, key, tag, float(tol))
+    fnList = [lambda data,k=key,t=tag,tol=tol: filter_fn(data, k, t, float(tol))
               for key, val in kwargs.items() if val
               for tag, tol in map(lambda x: x.split(':'), val.split(','))]
     for fname in filename:
-        ds = read(fname, format=format, emap=emap, units=units)
+        ds = read(fname, log=log, format=format, emap=emap, units=units)
         for data in ds:
             if not any([fn(data) for fn in fnList]):
                 writer.add(data)
