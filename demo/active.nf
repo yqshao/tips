@@ -218,11 +218,12 @@ process filter {
 
     output:
     tuple val{iter}, path('qbc.xyz') into qbcDs
+    path('var.xyz')
 
     script:
     """
-    tips qbc ds*/* -o tmp -of xyz
-    tips filter tmp.xyz $params.qbcTags -o qbc -of xyz
+    tips qbc ds*/* -o var -of xyz
+    tips filter var.xyz $params.qbcTags -o qbc -of xyz
     """
 }
 
