@@ -3,18 +3,21 @@
 // Demo active learning workflow with tips (processes indicated as boxes)
 // The workflow is analogous to that of:
 // C. Schran, J. Behler & D. Marx, J. Chem. Theory Comput., 2019, 16, 88-99.
-//                                            ┌─────────┐
-//                                    ┌──────►│Label4Qbc├─────┐
-//                                    │       └─────────┘     │
-//                                    │            ▲          ▼
-// ┌──────┐          ┌─────────┐      │       ┌────┴────┐ ┌──────┐y
-// │Lammps├─►InitDs─►│PinnTrain├─►PiNetModel─►│AseSample│ │ErrTol├─►FinalModel
-// └──────┘          └─────────┘              └─────────┘ └───┬──┘
-//                        ▲                                   │n
-//                        │      ┌───────────┐                │
-//                      AugDs◄───┤LammpsLabel│◄─Ds2Label◄─────┘
-//                               └───────────┘
-// Flowchart generated with: https://asciiflow.com/
+//
+//
+// -------------------- Phase 2 Exploration by Qbc -----------------------------
+//                                   ┌────────┐
+//                            ┌─────►│ml_label├─►ds2Qbc
+//                            │      └────────┘    │
+//                            │           ▲        ▼
+//             ┌───────┐      │      ┌────┴────┐ ┌───┐y
+//     initDs─►│trainer├─► mlModel──►│ml_sample│ │qbc├─►finalModel
+//             └───────┘             └─────────┘ └─┬─┘
+//                 ▲                               │n
+//                 │      ┌──────────┐             │
+//                augDs◄──┤base_label│◄─ds2Label◄──┘
+//                        └──────────┘
+// -----------------------------------------------------------------------------
 
 // Parameters (fixed or from input)
 // Lammps Setup (unit: real):
@@ -29,22 +32,26 @@
 //   Y. Shao, M. Hellström, P. D. Mitev, L. Knijff & C. Zhang,
 //   J. Chem. Inf. Model., 2020, 60, 3.
 
-// Adjustable params
-params.pinnParams = 'inputs/pinet.yml'
+params.baseDir =  './'       //base directory for outputs
+// model related
+params.maxIter = 5           //no. generations
+params.modelSeeds = 3        //no. models
+params.modelParams = 'inputs/pinet.yml'
+params.initSteps = 200000    //steps for initDs
+params.retrainSteps = 50000  //steps for each augDs
+// sampling settings
 params.init = 'inputs/init.{lmp,geo}'
 params.labeller = 'inputs/{label.lmp,init.geo}'
 params.sampleInit = 'inputs/init.xyz'
-params.maxIter = 5           //no. generations
-params.seed = 3              //no. models
-params.sampleTime = 5        //resample time [ps]
+params.sampleTime = 0.1      //resample time [ps]
 params.sampleInterv = 0.005  //resample every [ps]
-params.initSteps = 200000    //steps for initDs
-params.retrainSteps = 50000  //steps for each augDs
-// Filters
-params.qbcTags = '-vmax "!e:0.01,!f:0.01"'
+params.sampleSeeds = 10      //resample seeds
+// filters
+params.qbcTags = '-vmax "!f:0.0001"'
 params.lmpTags = '-vmax "e:-20" -amax "f:10"'
 params.restartTags = '-vmax "e:-42" -amax "f:4"'
 
+baseDir = params.baseDir
 // Create the output channels
 initDs = Channel.create()   // for training sets (iter, ds)
 trainDs = Channel.create()   // for training sets (iter, ds)
@@ -56,8 +63,8 @@ ds4label = Channel.create() // ds to be labelled
 aug4combine = Channel.create() // ds to be labelled
 
 // Connecting the channels
-Channel.of(1..params.seed)
-    .map{[1, it, file(params.pinnParams)]}
+Channel.of(1..params.modelSeeds)
+    .map{[1, it, file(params.modelParams)]}
     .mix(ckpts)
     .set{ckpt4train}
 Channel.of([2, file(params.sampleInit)])
@@ -67,7 +74,7 @@ Channel.of([2, file(params.sampleInit)])
 initDs.map{[1, it]}
     .mix(trainDs)
     .tap{ds4combine}
-    .combine(Channel.of(1..params.seed)).map{it -> it[[0,2,1]]}
+    .combine(Channel.of(1..params.modelSeeds)).map{it -> it[[0,2,1]]}
     .tap{ds4train}
 models
     .map{iter, seed, model -> [iter+1, seed, model]}
@@ -80,7 +87,7 @@ models
     .set{model4qbc}
 trajs
     .tap{qbcRef}
-    .combine(Channel.of(2..params.seed)).map{it -> it[[0,2,1]]}
+    .combine(Channel.of(2..params.modelSeeds)).map{it -> it[[0,2,1]]}
     .join(model4qbc.other, by: [0,1])
     .set{qbcInp}
 ds4combine
@@ -96,8 +103,8 @@ sampleInp = init4sample.join(model4qbc.md)
 
 // Proceses
 process kickoff {
-    publishDir 'datasets/', pattern: '{train,test}_1.xyz'
-    publishDir 'trajs/iter1', pattern: 'label.xyz'
+    publishDir "$baseDir/datasets/", pattern: '{train,test}_1.xyz'
+    publishDir "$basedir/trajs/iter1", pattern: 'label.xyz'
     label 'lammps'
 
     input:
@@ -117,7 +124,7 @@ process kickoff {
 }
 
 process trainner {
-    publishDir "models/iter$iter/seed$seed"
+    publishDir "$baseDir/models/iter$iter/seed$seed"
     stageInMode 'copy'
     label 'pinn'
 
@@ -140,7 +147,7 @@ process trainner {
 }
 
 process sampler {
-    publishDir "trajs/iter$iter/seed1"
+    publishDir "$baseDir/trajs/iter$iter/seed1"
     label 'pinn'
 
     input:
@@ -153,6 +160,7 @@ process sampler {
     """
     #!/usr/bin/env python3
     import pinn
+    import numpy as np
     import tensorflow as tf
     from ase import units
     from ase.io import read, write
@@ -162,20 +170,22 @@ process sampler {
     from ase.md.nptberendsen import NPTBerendsen
 
     calc = pinn.get_calc("$model/params.yml")
-    atoms = read("$init")
-    atoms.set_calculator(calc)
-    MaxwellBoltzmannDistribution(atoms, 330.*units.kB)
-    dt = 0.5 * units.fs
-    steps = int($params.sampleTime*1e3*units.fs/dt)
-    dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
-                      taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
-    interval = int($params.sampleInterv*1e3*units.fs/dt)
-    dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
-    dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
-    try:
-        dyn.run(steps)
-    except:
-        pass
+    for seed in range($params.sampleSeeds):
+        rng = np.random.default_rng(seed)
+        atoms = read("$init")
+        atoms.set_calculator(calc)
+        MaxwellBoltzmannDistribution(atoms, 330.*units.kB, rng=rng)
+        dt = 0.5 * units.fs
+        steps = int($params.sampleTime*1e3*units.fs/dt)
+        dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
+                          taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
+        interval = int($params.sampleInterv*1e3*units.fs/dt)
+        dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
+        dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
+        try:
+            dyn.run(steps)
+        except:
+            pass
     traj = read('aug.traj', index=':')
     [atoms.wrap() for atoms in traj]
     write('ref.xyz', traj)
@@ -183,7 +193,7 @@ process sampler {
 }
 
 process pinnlabel {
-    publishDir "trajs/iter$iter/seed$seed"
+    publishDir "$baseDir/trajs/iter$iter/seed$seed"
     label 'pinn'
 
     input:
@@ -214,11 +224,11 @@ process pinnlabel {
 }
 
 process filter {
-    publishDir "trajs/iter$iter"
+    publishDir "$baseDir/trajs/iter$iter"
     label 'pinn'
 
     input:
-    tuple val(iter), path('ds??/*') from qbcRef.mix(qbcOther).groupTuple(size:params.seed)
+    tuple val(iter), path('ds??/*') from qbcRef.mix(qbcOther).groupTuple(size:params.modelSeeds)
 
     output:
     tuple val{iter}, path('qbc.xyz') into qbcDs
@@ -232,8 +242,8 @@ process filter {
 }
 
 process lmplabel {
-    publishDir "datasets/", pattern: "{train,test}*.xyz"
-    publishDir "trajs/iter$iter", pattern: "label.xyz"
+    publishDir "$baseDir/datasets/", pattern: "{train,test}*.xyz"
+    publishDir "$baseDir/trajs/iter$iter", pattern: "label.xyz"
     label 'lammps'
 
     input:
