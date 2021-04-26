@@ -104,7 +104,7 @@ sampleInp = init4sample.join(model4qbc.md)
 // Proceses
 process kickoff {
     publishDir "$baseDir/datasets/", pattern: '{train,test}_1.xyz'
-    publishDir "$basedir/trajs/iter1", pattern: 'label.xyz'
+    publishDir "$baseDir/trajs/iter1", pattern: 'label.xyz'
     label 'lammps'
 
     input:
