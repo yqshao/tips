@@ -34,11 +34,11 @@
 
 params.baseDir =  './'       //base directory for outputs
 // model related
-params.maxIter = 5           //no. generations
-params.modelSeeds = 3        //no. models
+params.maxIter = 30          //no. generations
+params.modelSeeds = 2        //no. models
 params.modelParams = 'inputs/pinet.yml'
-params.initSteps = 200000    //steps for initDs
-params.retrainSteps = 50000  //steps for each augDs
+params.trainSteps = 200000    //steps for initDs
+params.retrainSteps = 100000  //steps for each augDs
 // sampling settings
 params.init = 'inputs/init.{lmp,geo}'
 params.labeller = 'inputs/{label.lmp,init.geo}'
@@ -47,9 +47,9 @@ params.sampleTime = 0.1      //resample time [ps]
 params.sampleInterv = 0.005  //resample every [ps]
 params.sampleSeeds = 10      //resample seeds
 // filters
-params.qbcTags = '-vmax "!f:0.0001"'
-params.lmpTags = '-vmax "e:-20" -amax "f:10"'
-params.restartTags = '-vmax "e:-42" -amax "f:4"'
+params.qbcFilter = ''          // do not filter here
+params.labelFilter = '-vmax "e:-20" -amax "f:10"'
+params.restartFilter = '-vmax "e:-42" -amax "f:4"'
 
 baseDir = params.baseDir
 // Create the output channels
@@ -80,6 +80,7 @@ models
     .map{iter, seed, model -> [iter+1, seed, model]}
     .until{it[0]>params.maxIter}
     .tap(ckpts)
+    .tap{finalModel}
     .branch {
         md: it[1]==1
             return [it[0], it[2]]
@@ -103,8 +104,8 @@ sampleInp = init4sample.join(model4qbc.md)
 
 // Proceses
 process kickoff {
-    publishDir "$baseDir/datasets/", pattern: '{train,test}_1.xyz'
-    publishDir "$baseDir/trajs/iter1", pattern: 'label.xyz'
+    publishDir "$baseDir/datasets/", pattern: '{train,test}_1.xyz', mode: 'link'
+    publishDir "$baseDir/trajs/iter1", pattern: 'label.xyz', mode: 'link'
     label 'lammps'
 
     input:
@@ -124,7 +125,7 @@ process kickoff {
 }
 
 process trainner {
-    publishDir "$baseDir/models/iter$iter/seed$seed"
+    publishDir "$baseDir/models/iter$iter/seed$seed", mode: 'link'
     stageInMode 'copy'
     label 'pinn'
 
@@ -141,13 +142,13 @@ process trainner {
     pinn_train --model-dir='model' --params-file='model/params.yml'\
         --train-data='train.yml' --eval-data='eval.yml'\
         --cache-data=True --batch-size=1 --shuffle-buffer=500\
-        --train-steps=${params.initSteps+(iter-1)*params.retrainSteps}\
+        --train-steps=${params.trainSteps+(iter-1)*params.retrainSteps}\
         ${iter==1? "--regen-dress": ""}
     """
 }
 
 process sampler {
-    publishDir "$baseDir/trajs/iter$iter/seed1"
+    publishDir "$baseDir/trajs/iter$iter/seed1", mode: 'link'
     label 'pinn'
 
     input:
@@ -180,8 +181,8 @@ process sampler {
         dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
                           taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
         interval = int($params.sampleInterv*1e3*units.fs/dt)
-        dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="w"), interval=interval)
-        dyn.attach(Trajectory('aug.traj', 'w', atoms).write, interval=interval)
+        dyn.attach(MDLogger(dyn, atoms, 'aug.log', mode="a"), interval=interval)
+        dyn.attach(Trajectory('aug.traj', 'a', atoms).write, interval=interval)
         try:
             dyn.run(steps)
         except:
@@ -193,7 +194,7 @@ process sampler {
 }
 
 process pinnlabel {
-    publishDir "$baseDir/trajs/iter$iter/seed$seed"
+    publishDir "$baseDir/trajs/iter$iter/seed$seed", mode: 'link'
     label 'pinn'
 
     input:
@@ -224,7 +225,7 @@ process pinnlabel {
 }
 
 process filter {
-    publishDir "$baseDir/trajs/iter$iter"
+    publishDir "$baseDir/trajs/iter$iter", mode: 'link'
     label 'pinn'
 
     input:
@@ -237,13 +238,13 @@ process filter {
     script:
     """
     tips qbc ds*/* -o var -of xyz
-    tips filter var.xyz $params.qbcTags -o qbc -of xyz
+    tips filter var.xyz $params.qbcFilter -o qbc -of xyz
     """
 }
 
 process lmplabel {
-    publishDir "$baseDir/datasets/", pattern: "{train,test}*.xyz"
-    publishDir "$baseDir/trajs/iter$iter", pattern: "label.xyz"
+    publishDir "$baseDir/datasets/", pattern: "{train,test}*.xyz", mode: 'link'
+    publishDir "$baseDir/trajs/iter$iter", pattern: "label.xyz", mode: 'link'
     label 'lammps'
 
     input:
@@ -254,7 +255,7 @@ process lmplabel {
     tuple val(iter), path("train_${iter}.xyz") into aug4combine
     tuple val{iter}, path('restart.xyz') into restart
     path "test_${iter}.xyz"
-    path "*label.xyz"
+    path "label.*"
 
     script:
     """
@@ -262,9 +263,53 @@ process lmplabel {
     mpirun -np $task.cpus lmp_mpi -in label.lmp || echo LAMMPS aborted
     sed -i '/WARNING/d' label.log
     tips filter label.dump --log label.log -o label -of xyz\
-        --emap '1:1,2:8,3:11,4:17' --units real $params.lmpTags
-    tips filter label.xyz -o tmp -of xyz $params.restartTags
+        --emap '1:1,2:8,3:11,4:17' --units real $params.labelFilter
+    tips filter label.xyz -o tmp -of xyz $params.restartFilter
     tac tmp.xyz | grep -m1 -A1 -B999 Lattice | tac > restart.xyz
     tips split label.xyz -s 'train_$iter:0.9,test_$iter:0.1' -of xyz
+    """
+}
+
+process finalmd {
+    publishDir "$baseDir/trajs/final", mode: 'link'
+    label 'pinn'
+
+    input:
+    path model from finalModel.last().map{it[2]}
+
+    output:
+    path 'final*'
+
+    script:
+    """
+    #!/usr/bin/env python3
+    import pinn
+    import numpy as np
+    import tensorflow as tf
+    from ase import units
+    from ase.io import read, write
+    from ase.io.trajectory import Trajectory
+    from ase.md import MDLogger
+    from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+    from ase.md.nptberendsen import NPTBerendsen
+
+    calc = pinn.get_calc("$model/params.yml")
+    atoms = read("${file(params.sampleInit)}")
+    atoms.set_calculator(calc)
+    MaxwellBoltzmannDistribution(atoms, 330.*units.kB)
+    dt = 0.5 * units.fs
+    steps = int(100*1e3*units.fs/dt)
+    dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
+                      taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
+    interval = int(0.1*1e3*units.fs/dt)
+    dyn.attach(MDLogger(dyn, atoms, 'final.log', mode="a"), interval=interval)
+    dyn.attach(Trajectory('final.traj', 'a', atoms).write, interval=interval)
+    try:
+        dyn.run(steps)
+    except:
+        pass
+    traj = read('final.traj', index=':')
+    [atoms.wrap() for atoms in traj]
+    write('final.xyz', traj)
     """
 }
