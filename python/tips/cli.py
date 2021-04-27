@@ -109,7 +109,6 @@ def filterds(filename, log, units, emap, format, output, oformat, **kwargs):
     data point is filtered out.
     """
     import numpy as np
-    writer = get_writer(output, format=oformat)
     filterFns = {
         'val_max': lambda data, tol: np.any(data>tol),
         'val_min': lambda data, tol: np.any(data<tol),
@@ -120,14 +119,18 @@ def filterds(filename, log, units, emap, format, output, oformat, **kwargs):
             return not filterFns[key](data[f"{tag[1:]}_data"], tol)
         else:
             return filterFns[key](data[f"{tag}_data"], tol)
+    writer = get_writer(output, format=oformat)
     fnList = [lambda data,k=key,t=tag,tol=tol: filter_fn(data, k, t, float(tol))
               for key, val in kwargs.items() if val
               for tag, tol in map(lambda x: x.split(':'), val.split(','))]
+    idx = []
     for fname in filename:
         ds = read(fname, log=log, format=format, emap=emap, units=units)
-        for data in ds:
+        for i,data in enumerate(ds):
             if not any([fn(data) for fn in fnList]):
                 writer.add(data)
+                idx.append(i)
+    np.savetxt(f'{output}.idx', idx, fmt='%i')
     writer.finalize()
 
 
