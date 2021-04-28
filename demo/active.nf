@@ -244,7 +244,7 @@ process filter {
 
 process lmplabel {
     publishDir "$baseDir/datasets/", pattern: "{train,test}*.xyz", mode: 'link'
-    publishDir "$baseDir/trajs/iter$iter", pattern: "label.xyz", mode: 'link'
+    publishDir "$baseDir/trajs/iter$iter", pattern: "label.*", mode: 'link'
     label 'lammps'
 
     input:
