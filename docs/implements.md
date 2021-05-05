@@ -1,6 +1,6 @@
 # Implemented workflow and processes
 
-## Active Learning Strategies
+## Strategies
 
 ### Explore
 
