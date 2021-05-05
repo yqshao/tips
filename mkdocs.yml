@@ -1,12 +1,20 @@
 site_name: TIPS documentation
 nav:
-  - Home: index.md
-  - Workflow: workflow.md
-  - TIPS CLI: cli.md
-  - Extending TIPS: extend.md
+  - Introduction: index.md
+  - CLI: cli.md
+  - Workflow:
+    - Overview: workflow.md
+    - Implemented: implements.md
+    - Advanced: advanced.md
 plugins:
   - mermaid2
 theme:
   name: material
 markdown_extensions:
   - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences:
+     custom_fences:
+       - name: mermaid
+         class: mermaid
+         format: !!python/name:mermaid2.fence_mermaid
