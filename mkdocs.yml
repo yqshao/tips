@@ -3,9 +3,11 @@ nav:
   - Introduction: index.md
   - CLI: cli.md
   - Workflow:
-    - Overview: workflow.md
-    - Implemented: implements.md
-    - Advanced: advanced.md
+    - Overview: workflow/overview.md
+    - Strategies:
+        - explore: workflow/explore.md
+    - Abstract workflows: workflow/abstract.md
+    - Implementions: workflow/implementation.md
 plugins:
   - mermaid2
 theme:

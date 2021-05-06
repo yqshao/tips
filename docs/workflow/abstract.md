@@ -1,16 +1,17 @@
-#  Advanced
+# Abstract workflows
 
-## Abstract workflows
+Three types of abstract workflows are implemented in TIPS, they are workflows
+that follows certain input/output patterns, additional parameters can be present
+in the inputs if necessary.
 
-Three types of abstract workflows, they are workflows that follows certain
-input/output patterns, additional parameters can be present in the inputs
-if necessary.
+| Type     | Inputs                                         | Output    |
+|----------|------------------------------------------------|-----------|
+| trainer  | `[inp: model, ds:dataset, maxIter: iter, ...]` | `models`  |
+| sampler  | `[inp: model, init: structure, ...]`           | `dataset` |
+| labeller | `[ds:dataset]`                                 | `dataset` |
+| filter   | `[params: parameters, ds:dataset, ...]`        | `dataset` |
 
-| Type     | Inputs                                               | Output          |
-|----------|------------------------------------------------------|-----------------|
-| trainer  | `meta, [inp: model, ds:dataset, maxIter: iter, ...]` | `meta, models`  |
-| sampler  | `meta, [inp: model, init: structure, ...]`           | `meta, dataset` |
-| labeller | `meta, [ds:dataset]`                                 | `meta, dataset` |
+## Example usage
 
 The abstract workflows can be retrieve from the `adaptor` module, where the
 exact version retrived according to `param`. For instance, the below script
@@ -24,20 +25,26 @@ include {trainer as runner} from './tips/adapter', addParams(trainer:'runner')
 meta = Channel.value(null)
 inputs = Channel.of([ds: 'train.xyz'])
 
-pinn_models =   inputs | map{it+[subDir: 'pinn']}   | meta.combine | pinn
-runner_models = inputs | map{it+[subDir: 'runner']} | meta.combine | runner
+workflow{
+  pinn_models =   inputs | map{it+[subDir: 'pinn']}   | meta.combine | pinn
+  runner_models = inputs | map{it+[subDir: 'runner']} | meta.combine | runner
+}
 ```
 
-### Implemented abstract workflows
+## Implemented abstract workflows
 
 Below is a table of the abstract workflows available in TIPS.
 
-| Name     | trainer   | sampler      | labeller    |
-|----------|-----------|--------------|-------------|
-| 'pinn'   | pinnTrain | pinnSample   | pinnLabel   |
-| 'lammps' |           | lammpsSample | lammpsLabel |
+| Name     | trainer   | sampler      | labeller    | filter     |
+|----------|-----------|--------------|-------------|------------|
+| 'pinn'   | pinnTrain | pinnSample   | pinnLabel   |            |
+| 'lammps' |           | lammpsSample | lammpsLabel |            |
+| 'tips'   |           |              |             | tipsFilter |
 
-### Custom abstract workflows
+Their addition options may be found in the [implementation
+documentation](./implmentation.md).
+
+## Custom abstract workflows
 It is also possible to specify a custom trainer in the workflow by changing the
 `trainer/sampler/labeller` parameter to a relative path starting with `./`, in
 this case, adaptor will try to get such a general workflow from the script, in
@@ -52,9 +59,7 @@ include {trainer} from './tips/adapter'
 This is useful if you would like to reuse an active learning workflow, but
 replace certain module.
 
-
-### Template for custom workflows
-
+## Template workflow
 Below is a template for implementing a custom labeller for TIPS
 
 ```groovy
@@ -94,5 +99,4 @@ workflow {
 - input channels update the defaults again as the actual input
 - the default workflow invokes the workflow with an empty input
 - `subDir` is a special options, it allows a "main" workflow to redirect the
-  output of a sub-workflow. 
-
+  output of a sub-workflow.

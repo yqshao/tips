@@ -1,38 +1,8 @@
-# Implemented workflow and processes
+# Implementation workflows
 
-## Strategies
+## PiNN
 
-### Explore
-
-`tips/explore` is an workflow in which a model is used to sample the configuration space
-
-``` mermaid
-graph LR
-  A[initDs] --> B([trainer]);
-  B --> C[model];
-  C --> D([sampler]);
-  D --> E{{tol?}} 
-  E -- yes --> F[finalModel];
-  E -- no --> G[augDs];
-  G --> B;
-```
-
-| Inputs       | Description                   | Outputs | Description             |
-|--------------|-------------------------------|---------|-------------------------|
-| initDs       | initial dataset               | model   | final model given input |
-| trainInit    | initial input for trainer     |         |                         |
-| trainParam   | extra params for trainer      |         |                         |
-| trainIter    | initial iteration trainer     |         |                         |
-| trainSeeds   | number of seeds for qbc       |         |                         |
-| retrainIter  | iteration retraining          |         |                         |
-| sampleInit   | initial structure for sampler |         |                         |
-| sampleparams | extra params for sampler      |         |                         |
-| labelInp     | input for labbeller           |         |                         |
-| maxIter      | max iteration                 |         |                         |
-
-## PiNN 
-
-### pinnTrain 
+### pinnTrain
 Trains a model with PiNN
 
 | Inputs  | Description              | Outputs | Description              |
@@ -44,7 +14,7 @@ Trains a model with PiNN
 
 
 
-### pinnLabel 
+### pinnLabel
 Label a dataset with PiNN
 
 | Inputs | Description  | Outputs | Description      |
@@ -80,4 +50,3 @@ Label a dataset with Lammps
 |--------|----------------------|---------|------------------|
 | inp    | lammps input script  | label   | labelled dataset |
 | ds     | trianing set         |         |                  |
-
