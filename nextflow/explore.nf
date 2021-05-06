@@ -34,7 +34,7 @@ workflow explore {
     main:
     condition = {it[0].iter>=params.maxIter}
     defaults = getParams(defaults, params)
-    setup = inputs.map{[it, getParams(defaults, it)]}.collect(se)
+    setup = inputs.map{[it[1]+[meta:it[0]], getParams(defaults, it)]}.collect(se)
         .flatMap{(1..it[1].trainSeeds).collect(seed->[it[0]+[seed:seed], it[1]]}}
 
     // initalize the first iteration, only sample and label the first seed
@@ -67,6 +67,11 @@ workflow explore {
     setNext(nextSteps,  trainSteps.map{[it[0], it[1]+[maxSteps: it[1].maxSteps+it[1].retrainSteps]]})
     setNext(nextSample, sampleInp.join(restart).map{[it[0],it[1]+[init:it[2]]]})
     setNext(nextLabel,  labelInp)
+
+    emit:
+    models.filter{it[0].seed==1}
+        .map{[it[0].findAll(k,v->k!='iter'&k!='seed'), it[1]]}
+        .groupTuple().map{it[0].meta, it[1][-1]}
 }
 
 workflow {

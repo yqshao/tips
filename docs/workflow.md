@@ -33,16 +33,17 @@ nextflow.enable.dsl=2
 
 include {explore} from './tips/explore'
 
+metadata = Channel.value(null)
 inputs = Channel.of('pinet.yml', 'bpnn.yml')
                 .map{[trainInp: it, subDir: "$it.baseName"]}
 
-outputs = explore(inputs, null)
-outputs.models.view()
+outputs = explore(metadata.combine(inputs))
 ```
 
-The above script runs two `explore` experiments with different inputs for
-training, each of them saved to a different directory. All workflows in TIPS
-accepts two inputs, the first specifies all the required inputs, while the later
-contains metadata which will be used to identify the outputs in a workflow (here
-they are set to `null`). You can find the list of available workflows and their
-options in [implemented workflows](implements.md).
+All workflows in TIPS follows a same pattern for input/output, all inputs should
+be a tuple of [metadata, inputs], and workflow outputs [metadata, output]. The
+metadata is copied to the output, for the outer workflow to identify the
+outputs. The inputs are maps that specifies the options of the workflow. You can
+find the list of inputs for each workflow implemented in [implemented
+workflows](implements.md). Here, we set the metadata to `null`, and iterate over
+different training parameters in the inputs.

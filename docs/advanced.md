@@ -6,24 +6,26 @@ Three types of abstract workflows, they are workflows that follows certain
 input/output patterns, additional parameters can be present in the inputs
 if necessary.
 
-| Type     | Inputs                                                   | Output          |
-|----------|----------------------------------------------------------|-----------------|
-| trainer  | `[inp: model, ds:dataset, maxIter: iter, ... ], meta` | `models, meta`  |
-| sampler  | `[inp: model, init: structure, ...], meta`               | `dataset, meta` |
-| labeller | `[inp: model, ds:dataset, ...], meta`                    | `dataset, meta` |
+| Type     | Inputs                                               | Output          |
+|----------|------------------------------------------------------|-----------------|
+| trainer  | `meta, [inp: model, ds:dataset, maxIter: iter, ...]` | `meta, models`  |
+| sampler  | `meta, [inp: model, init: structure, ...]`           | `meta, dataset` |
+| labeller | `meta, [ds:dataset]`                                 | `meta, dataset` |
 
 The abstract workflows can be retrieve from the `adaptor` module, where the
-exact version retrived according to `params`. For instance, the below script
-trains two models with the same datasets with two different programes.
+exact version retrived according to `param`. For instance, the below script
+trains two models with the same datasets with two different programs.
 
 ```groovy
 params.trainer = 'pinn'
 include {trainer as pinn} from './tips/adapter'
 include {trainer as runner} from './tips/adapter', addParams(trainer:'runner')
 
+meta = Channel.value(null)
 inputs = Channel.of([ds: 'train.xyz'])
-pinn_models = pinn(inputs.map{it+[subDir: 'pinn']}, null)
-runner_models = runner(inputs.map{it+['subDir':, 'runner']}, null)
+
+pinn_models =   inputs | map{it+[subDir: 'pinn']}   | meta.combine | pinn
+runner_models = inputs | map{it+[subDir: 'runner']} | meta.combine | runner
 ```
 
 ### Implemented abstract workflows
@@ -51,9 +53,9 @@ This is useful if you would like to reuse an active learning workflow, but
 replace certain module.
 
 
-## Example TIPS workflow
+### Template for custom workflows
 
-Below is a template for implementing a workflow for TIPS
+Below is a template for implementing a custom labeller for TIPS
 
 ```groovy
 params.publishDir      = 'mymodule'
@@ -66,14 +68,14 @@ defaults.subDir = '.'
 defaults.inp    = null
 defaults.ds     = null
 defaults = getParams(defaults, params)
-process trainner {
+process labeller {
     publishDir {"$params.publishDir/$setup.subDir"}, mode: params.publishMode
 
     input:
-    tuple val(inputs), val(meta)
+    tuple val(meta), val(input)
 
     output:
-    tuple file("output"), val(meta) 
+    tuple val{meta}, file("output") 
 
     script:
     setup = getParams(defaults, inputs)
@@ -83,7 +85,7 @@ process trainner {
 }
 
 workflow {
-    trianer([:])
+    labeller([null, [:]])
 }
 ```
 
