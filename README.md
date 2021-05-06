@@ -1,12 +1,14 @@
-# Teoroo Interactomic Potential Suite (TIPS)
+# The Interactomic Potential Suite (TIPS)
 
 TIPS is a set of tools for performing simulation with interatomic potentials.
 TIPS is designed to streamline the composing of active learning workflows for
 interatomic potentials.
 
+**!!WARNING!!** this is a project in active development, nothing is guaranteed to work. 
+
 ## Quick start
 
-Tips are containes a set of nextflow scripts that can be used wihtout installation.
+Tips are contains a set of nextflow scripts that can be used without installation.
 
 ``` bash
 nextflow run yqshao/tips --initDs 'test.xyz'
@@ -15,7 +17,7 @@ nextflow run yqshao/tips --initDs 'test.xyz'
 You can find how to install and extend TIPS in the
 [documentation](https://yqshao.github.io/tips/workflow/#reusing-workflows). TIPS
 also provides a command line utility for tasks like dataset screening,
-conversion. More infomation can be found here
+conversion. More information can be found here
 [here](https://yqshao.github.io/tips/cli/).
 
 The workflows are composed as in the Nextflow language, making the workflows
