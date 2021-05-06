@@ -1,18 +1,4 @@
 #!/usr/bin/env nextflow
-
-//                               ┌───────┐
-//                        ┌─────►│mlLabel├─► toQbc
-//                        │      └───────┘    │
-//                        │           ▲       ▼
-//           ┌───────┐    │      ┌────┴───┐ ┌───┐
-// initDs───►│trainer├─►models──►│  traj  │ │qbc│
-//           └───────┘           └────────┘ └─┬─┘
-//             ▲                              │
-//             │     ┌────────┐               │
-//           augDs◄──┤refLabel│◄───toLabel◄───┘
-//                   └────────┘
-//
-
 nextflow.enable.dsl=2
 
 // parameters trainer/sampler/labeller can be replaced with processes

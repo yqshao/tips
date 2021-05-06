@@ -1,18 +1,14 @@
 # Workflow overview
 
-## General specs
-TIPS workflows are written in the Nextflow DSL language. All workflow defintions
-can work on their own, or be included as
-
 ## Installation
 
-Nextflow does not yet have a mechanism to "install" a module. To use the TIPS 
-workflows, just download the workflow definitions to your working directory 
-with, which should create a `tips` directory in you working directory.
+Tips is not published yet. To use the TIPS workflows, just download the workflow
+definitions to your working directory with, which should create a `tips`
+directory in you working directory.
 
 ```shell
-curl https://codeload.github.com/yqshao/tips/tar.gz/master | \
-  tar -xz --strip=2 tips-master/nextflow/
+mkdir -p tips && curl https://codeload.github.com/yqshao/tips/tar.gz/master | \
+  tar -C tips -xz --strip=2 tips-master/nextflow/
 ```
 
 ## Using a workflow
@@ -23,12 +19,12 @@ To run a workflow as it is, just run:
 nf run tips/explore.nf --initDs my_ds.data #...
 ```
 
-You might want to check the avaible options for each workflow
+You might want to check the available options for each workflow.
 
 ## Reusing workflows
 
-The Nextflow modules can be used as a sub-workflow in a more complex 
-context. To do so, import the workflow:
+The Nextflow modules can be used as a sub-workflow in a more complex context. To
+do so, import the workflow:
 
 ```groovy
 #!/usr/bin/env nextflow
@@ -48,5 +44,5 @@ The above script runs two `explore` experiments with different inputs for
 training, each of them saved to a different directory. All workflows in TIPS
 accepts two inputs, the first specifies all the required inputs, while the later
 contains metadata which will be used to identify the outputs in a workflow (here
-they are set to `null`). You can find the list of avaible workflows and their
+they are set to `null`). You can find the list of available workflows and their
 options in [implemented workflows](implements.md).
