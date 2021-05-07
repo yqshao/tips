@@ -1,6 +1,6 @@
 # Implementation workflows
 
-## PiNN
+## `tips/pinn`
 
 ### pinnTrain
 Trains a model with PiNN
@@ -33,7 +33,7 @@ Sammple a MD trajectory with PiNN
 | time   | sample time [ps]                       |         |                 |
 | every  | sample every [ps]                      |         |                 |
 
-## Lammps
+## `tips/lammps`
 
 ### lammpsSample
 Sample a trajectory with Lammps

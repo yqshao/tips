@@ -1,24 +1,23 @@
 site_name: TIPS documentation
 nav:
   - Introduction: index.md
+  - Workflow:
+    - Overview: workflow/overview.md
+    - Abstract: workflow/abstract.md
+    - Strategies:
+        - tips/explore: workflow/explore.md
+    - Implementions: workflow/implementation.md
   - CLI:
     - Overview: cli/overview.md
     - Commands:
       - convert: cli/convert.md
       - filter: cli/filter.md
-  - Workflow:
-    - Overview: workflow/overview.md
-    - Strategies:
-        - explore: workflow/explore.md
-    - Abstract workflows: workflow/abstract.md
-    - Implementions: workflow/implementation.md
 plugins:
   - mermaid2
 theme:
   name: material
   features:
     - navigation.sections
-    - toc.integrate
 markdown_extensions:
   - admonition
   - pymdownx.highlight
@@ -27,3 +26,5 @@ markdown_extensions:
        - name: mermaid
          class: mermaid
          format: !!python/name:mermaid2.fence_mermaid
+extra_css:
+  - stylesheets/extra.css

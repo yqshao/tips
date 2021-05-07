@@ -1,4 +1,4 @@
-# Workflow overview
+# Workflow Overview
 
 TIPS provides a number of workflows to perform atomistic machine learning (AML)
 tasks. Those include:
@@ -9,7 +9,7 @@ tasks. Those include:
 - The `adaptor.nf` provides abstract workflows that allows the composition of
   strategies in a implementation agnostic manner.
 
-## Using a workflow
+## Usage
 
 The aforementioned workflows are written in the Nextflow language, with which
 the workflows can be automatically pulled from Github using the following
@@ -39,7 +39,7 @@ The local workflows can be executed as such:
 nf run tips/explore.nf --initDs myDs.data
 ```
 
-## Reusing workflows
+## Inclusion
 
 One potential purpose of installing TIPS workflows is to use them as a component
 of your own workflow, for instance, the following workflow imports the explore

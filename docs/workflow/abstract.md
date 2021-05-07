@@ -11,7 +11,7 @@ in the inputs if necessary.
 | labeller | `[ds:dataset]`                                 | `dataset` |
 | filter   | `[params: parameters, ds:dataset, ...]`        | `dataset` |
 
-## Example usage
+## Usage
 
 The abstract workflows can be retrieve from the `adaptor` module, where the
 exact version retrived according to `param`. For instance, the below script
@@ -31,7 +31,7 @@ workflow{
 }
 ```
 
-## Implemented abstract workflows
+## Implemented
 
 Below is a table of the abstract workflows available in TIPS.
 
@@ -44,12 +44,12 @@ Below is a table of the abstract workflows available in TIPS.
 Their addition options may be found in the [implementation
 documentation](./implmentation.md).
 
-## Custom abstract workflows
-It is also possible to specify a custom trainer in the workflow by changing the
-`trainer/sampler/labeller` parameter to a relative path starting with `./`, in
-this case, adaptor will try to get such a general workflow from the script, in
-that case, the workflow or process must be named as `trainer`, `sampler` or
-`labeller` accordingly.
+## Customization
+It is also possible to specify a custom workflow in the workflow by changing the
+`trainer`, `sampler` or `labeller` parameter to a relative path starting with
+`./`, in this case, adaptor will try to get such a general workflow from the
+script, in that case, the workflow or process must be named as `trainer`,
+`sampler` or `labeller` accordingly.
 
 ```groovy
 params.trainer = './custom'
@@ -59,7 +59,7 @@ include {trainer} from './tips/adapter'
 This is useful if you would like to reuse an active learning workflow, but
 replace certain module.
 
-## Template workflow
+## Template
 Below is a template for implementing a custom labeller for TIPS
 
 ```groovy
