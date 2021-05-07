@@ -1,20 +1,13 @@
 #  `tips/explore`
 
-`tips/explore` is an workflow in which a model is used to sample the configuration
-space.
+`tips/explore` is a workflow in which a model is used to sample the
+configuration space.
 
-``` mermaid
-graph LR
-  A[initDs] --> B([trainer]);
-  B --> C[model];
-  C --> D([sampler]);
-  D --> E{{tol?}} 
-  E -- yes --> F[finalModel];
-  E -- no --> G[augDs];
-  G --> B;
-```
+![](explore.svg){: style="min-width:80%" .center}
 
-This workflow outputs the final model for each input.
+The flowchart of the workflow is shown above, with the blue boxes being the
+inputs, green boxes being the sub-workflows, and the red being intermediate
+dataflow channels, the final model will be the output for each set of inputs.
 
 ## Options
 
