@@ -1,7 +1,11 @@
 site_name: TIPS documentation
 nav:
   - Introduction: index.md
-  - CLI: cli.md
+  - CLI:
+    - Overview: cli/overview.md
+    - Commands:
+      - convert: cli/convert.md
+      - filter: cli/filter.md
   - Workflow:
     - Overview: workflow/overview.md
     - Strategies:
@@ -12,6 +16,9 @@ plugins:
   - mermaid2
 theme:
   name: material
+  features:
+    - navigation.sections
+    - toc.integrate
 markdown_extensions:
   - admonition
   - pymdownx.highlight
