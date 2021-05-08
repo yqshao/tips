@@ -26,8 +26,8 @@ meta = Channel.value(null)
 inputs = Channel.of([ds: 'train.xyz'])
 
 workflow{
-  pinn_models =   inputs | map{it+[subDir: 'pinn']}   | meta.combine | pinn
-  runner_models = inputs | map{it+[subDir: 'runner']} | meta.combine | runner
+  inputs | map{it+[subDir: 'pinn']}   | meta.combine | pinn
+  inputs | map{it+[subDir: 'runner']} | meta.combine | runner
 }
 ```
 

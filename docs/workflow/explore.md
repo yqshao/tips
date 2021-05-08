@@ -42,11 +42,12 @@ nextflow.enable.dsl=2
 
 geometry = 'input.geo'
 trainInp = 'pinet.yml'
-labelInp = [inp:'spcefw_label.lmp', init:geometry]
 sampleInp = [inp:'spcefw_nvt.lmp', init:geometry]
+labelInp = [inp:'spcefw_label.lmp', init:geometry]
 
-include {explore} from './tips/explore', addParams(trainInp:trainInp, labelInp:labelInp)
 include {sampler} from './tips/adaptor', addParams(sampler:'lammps')
+include {explore} from './tips/explore', addParams(trainInp:trainInp,
+                                                   labelInp:labelInp)
 
 workflow {
     initDs = sampler([null, [inp:sampleInp, init:geometry]]))
