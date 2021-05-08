@@ -3,6 +3,15 @@
   --md-accent-fg-color:          #be2433;
 }
 
+body {
+  background-image:url('https://live.webb.uu.se/digitalAssets/207/c_207717-l_3-k_bg-city.svg');
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: rgba(255, 255, 255, 0.5);
+  background-blend-mode: lighten;
+}
+
 .center {
     display: block;
     margin: 0 auto;
