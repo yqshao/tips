@@ -36,4 +36,12 @@ body {
 
 .md-typeset table:not([class]) {
     display: table;
+    font-size: 90%;
+}
+
+.md-typeset table:not([class]) td{
+    padding: 10px 20px;
+}
+.md-typeset table:not([class]) th{
+    padding: 10px 20px;
 }
