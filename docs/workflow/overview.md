@@ -4,10 +4,9 @@ TIPS provides a number of workflows to perform atomistic machine learning (AML)
 tasks. Those include:
 
 - Strategies (e.g. `explore`) contains specific AML workflows like active
-  learning, delta machine learning, etc.
+  learning, delta ML, etc.
 - Implementations (e.g. `pinn`, `lammps`) contains implementation of workflows.
-- The `adaptor.nf` provides abstract workflows that allows the composition of
-  strategies in a implementation agnostic manner.
+- The `adaptor` provides abstract workflows that are implementation agnostic.
 
 ## Usage
 

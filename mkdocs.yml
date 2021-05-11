@@ -6,7 +6,10 @@ nav:
     - Abstract: workflow/abstract.md
     - Strategies:
         - tips/explore: workflow/explore.md
-    - Implementions: workflow/implementation.md
+    - Implementions:
+        - tips/tips: workflow/tips.md
+        - tips/pinn: workflow/pinn.md
+        - tips/lammps: workflow/lammps.md
   - CLI:
     - Overview: cli/overview.md
     - Commands:

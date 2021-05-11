@@ -3,21 +3,28 @@
 params.trainer  = 'pinn'
 params.sampler  = 'pinn'
 params.labeller = 'lammps'
-params.filter   = ''
+params.filter   = 'tips'
 
-include {pinnTrain; pinnSample} from './pinn'
-include {lammpsLabel} from './lammps'
+// All known implementations
+include {pinnTrain; pinnSample} from "$moduleDir/pinn"
+include {lammpsLabel; lammpsSample} from "$moduleDir/lammps"
+include {tipsFilter} from "$moduleDir/tips"
 
-process filter {
-    input:
-    ds
+workflow filter{
+    take:
+    inputs
 
-    output:
-    file "filtered.{yml,tfr}"
+    main:
+    switch (params.filter) {
+        case 'tips':
+            output = tipsFilter(inputs);
+            break;
+        default:
+            throw new Exception("Unkown filter $params.filter.");
+    }
 
-    """
-    tips filter $ds $params.filter -o filtered
-    """
+    emit:
+    output
 }
 
 workflow trainer{
@@ -25,12 +32,16 @@ workflow trainer{
     inputs
 
     main:
-    if (params.trainer!='pinn')
-        throw new Exception("Trainer $params.trainer not implemented.")
-    pinnTrain(inputs)
+    switch (params.trainer) {
+        case 'pinn':
+            output = pinnTrain(inputs);
+            break;
+        default:
+            throw new Exception("Unknown trainer $params.trainer.");
+    }
 
     emit:
-    pinnTrain.out
+    output
 }
 
 workflow sampler{
@@ -42,8 +53,11 @@ workflow sampler{
         case 'pinn':
             output = pinnSample(inputs);
             break;
+        case 'lammps':
+            output = lammpsSample(inputs);
+            break;
         default:
-            throw new Exception("sampler $params.sampler not implemented.");
+            throw new Exception("Unknown sampler $params.sampler.");
     }
 
     emit:

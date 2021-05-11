@@ -39,10 +39,9 @@ Below is a table of the abstract workflows available in TIPS.
 |--------|-----------|--------------|-------------|------------|
 | pinn   | pinnTrain | pinnSample   | pinnLabel   |            |
 | lammps |           | lammpsSample | lammpsLabel |            |
-| tips'  |           |              |             | tipsFilter |
+| tips   |           |              |             | tipsFilter |
 
-Their addition options may be found in the [implementation
-documentation](./implmentation.md).
+Their options and explanations can be found in the implementations section.
 
 ## Customization
 It is also possible to specify a custom workflow in the workflow by changing the

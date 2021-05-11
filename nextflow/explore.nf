@@ -18,60 +18,61 @@ defaults.trainInp     = null
 defaults.trainSeeds   = '3'
 defaults.trainSteps   = '200000'
 defaults.retrainSteps = '200000'
-defaults.sampleInp    = '["ensemble":"NPT", "time":5, "every":0.001, "T": 330]'
 defaults.sampleInit   = 'init.xyz'
+defaults.sampleParams = [:]
 defaults.labelInp     = 'label.lmp'
 
-include {iterUntil; setNext} from './utils'
-include {trainer;sampler;labeller} from './adaptor'
-include {filter as augFilter} from './adaptor', addParams(filter:params.augFilter)
-include {filter as resFilter} from './adaptor', addParams(filter:params.resFilter)
+include {iterUntil; setNext; getParams} from "$moduleDir/utils"
+include {trainer; sampler; labeller} from "$moduleDir/adaptor"
+include {filter as augFilter} from "$moduleDir/adaptor" addParams(inp:params.augFilter)
+include {filter as resFilter} from "$moduleDir/adaptor" addParams(inp:params.resFilter)
 
 workflow explore {
     take:
     inputs
 
     main:
-    condition = {it[0].iter>=params.maxIter}
+    condition = {it[0].iter>=params.maxIter.toInteger()}
+    condition2 = {it[0].iter>=params.maxIter.toInteger()-1}
     defaults = getParams(defaults, params)
-    setup = inputs.map{[it[1]+[meta:it[0]], getParams(defaults, it)]}.collect(se)
-        .flatMap{(1..it[1].trainSeeds).collect(seed->[it[0]+[seed:seed], it[1]]}}
+    setup = inputs.map{[it[1]+[meta:it[0]], getParams(defaults, it[1])]}
+        .flatMap{(1..it[1].trainSeeds.toInteger()).collect(seed->[it[0]+[seed:seed], it[1]])}
 
     // initalize the first iteration, only sample and label the first seed
-    initDs      = setup.map{[it[0], [ds: it[1].initDs, seeds: it[1].trainSeeds]]}
+    initDs      = setup.map{[it[0], [ds: it[1].initDs, seeds: it[1].trainSeeds.toInteger()]]}
     initCkpt    = setup.map{[it[0], [inp: it[1].trainInp]]}
     initSteps   = setup.map{[it[0], [maxSteps: it[1].trainSteps.toInteger(), retrainSteps: it[1].retrainSteps.toInteger()]]}
-    initSample  = setup.map{[it[0], [init: it[1].sampleInit, inp: it[1].sampleInp]]}
-    initLabel   = setup.map{[it[0], [inp: it[1].labelInp]]}
+    initSample  = setup.filter{it[0].seed==1}.map{[it[0], [init: it[1].sampleInit]+it[1].sampleParams]}
+    initLabel   = setup.filter{it[0].seed==1}.map{[it[0], [inp: it[1].labelInp]]}
 
-    // create the iterating channels
-    trainDs,    nextDs     = iterUntil(initDs,     condition)
-    trainCkpt,  nextCkpt   = iterUntil(initCkpt,   condition)
-    trainSteps, nextSteps  = iterUntil(initSteps,  condition)
-    sampleInp,  nextSample = iterUntil(initSample, condition)
-    labelInp,   nextlabel  = iterUntil(initSample, condition)
+    // // create the iterating channels
+    (trainDs,      nextDs    ) = iterUntil(initDs,     condition)
+    (trainCkpt,    nextCkpt  ) = iterUntil(initCkpt,   condition)
+    (trainSteps,   nextSteps ) = iterUntil(initSteps,  condition)
+    (sampleParams, nextSample) = iterUntil(initSample, condition)
+    (labelInp,     nextLabel ) = iterUntil(initLabel,  condition)
 
-    // the actual work for each iteraction
-    trainInp   = trainDs.join(trainCkpt).join(trainSteps).map{[it[0], [ds:it[1].ds]+it[2]+[maxSteps:it[3].maxSteps]]}
-    models     = trainer(trainInp)
-    sampleInp  = sampleInp.join(model).map{[it[0], it[1]+[model:it[2]]]}
-    traj       = sampler(sampleInp)
-    labelInp   = labelInp.join(traj).map{[it[0], it[1]+[ds:it[2]]]}
-    labels     = labeller(labelInp)
-    augDs      = augFilter(labels)
-    restart    = resFilter(labels)
+    // // the actual work for each iteraction
+    trainInp   = trainDs.join(trainCkpt).join(trainSteps).map{[it[0], [ds:it[1].ds]+it[2]+[genDress:it[0].iter==1, maxSteps:it[3].maxSteps]]}
+    models     = trainer(trainInp.map{[it[0],it[1]+[subDir:"models/iter${it[0].iter}/seed${it[0].seed}"]]})
+    sampleInp  = sampleParams.join(models).filter{it[0].seed==1}.map{[it[0], it[1]+[inp:it[2]]]}
+    traj       = sampler(sampleInp.map{[it[0],it[1]+[subDir:"trajs/iter${it[0].iter}"]]})
+    labelInp2  = labelInp.join(traj).map{[it[0], it[1]+[ds:it[2], subDir:"trajs/iter${it[0].iter}/label"]]}
+    labels     = labeller(labelInp2).map{[it[0], [ds:it[1]]]}
+    augDs      = augFilter(labels.map{[it[0],it[1]+[subDir:"trajs/iter${it[0].iter}/filter"]]})
+    restart    = resFilter(labels.map{[it[0],it[1]+[subDir:"trajs/iter${it[0].iter}/restart"]]})
 
     // prepare for the next iteration
-    setNext(nextDs,     trainDs.join(augDs).flatMap{(1..it[1].seeds).collect{[it[0]+[seed:seed], it[1]+[ds:[]<<it[1].ds<<it[2]]]}})
-    setNext(nextCkpt,   models.map{[it[0], [inp: it[1].model]]})
+    setNext(nextDs,     trainDs.join(augDs).flatMap{(1..it[1].seeds).collect{seed->[it[0]+[seed:seed], it[1]+[ds:([]<<it[1].ds<<it[2]).flatten()]]}})
+    setNext(nextCkpt,   models.map{[it[0], [inp:it[1]]]})
     setNext(nextSteps,  trainSteps.map{[it[0], it[1]+[maxSteps: it[1].maxSteps+it[1].retrainSteps]]})
-    setNext(nextSample, sampleInp.join(restart).map{[it[0],it[1]+[init:it[2]]]})
+    setNext(nextSample, sampleParams.join(restart).map{[it[0],it[1]+[init:it[2]]]})
     setNext(nextLabel,  labelInp)
 
     emit:
     models.filter{it[0].seed==1}
-        .map{[it[0].findAll(k,v->k!='iter'&k!='seed'), it[1]]}
-        .groupTuple().map{it[0].meta, it[1][-1]}
+        .map{[it[0].findAll{k,v->k!='iter'&k!='seed'}, it[1]]}
+        .groupTuple().map{[it[0], it[1][-1]]}
 }
 
 workflow {
