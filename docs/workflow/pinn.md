@@ -2,12 +2,15 @@
 
 ### pinnTrain
 
-| Inputs  | Default | Description               |
-|---------|---------|---------------------------|
-| inp     | `null`  | PiNN model or params file |
-| ds      | `null`  | trianing set              |
-| batch   | 1       | batch size                |
-| maxIter | 1000000 | max iteration [in steps]  |
+| Inputs      | Default   | Description                |
+|-------------|-----------|----------------------------|
+| inp         | `null`    | PiNN model or params file  |
+| ds          | `null`    | trianing set               |
+| maxIter     | `1000000` | max iteration [in steps]   |
+| genDress    | `true`    | generate atomistic dress   |
+| pinnBatch   | `10`      | batch size                 |
+| pinnCache   | `"True"`  | cache preprocessed dataset |
+| pinnShuffle | `500`     | shuffle buffer for PiNN    |
 
 Outputs the final model folder with checkpoints.
 
@@ -24,12 +27,12 @@ Outputs the labelled dataset.
 
 ### pinnSample
 
-| Inputs | Default | Description                            |
-|--------|---------|----------------------------------------|
-| inp    |         | PiNN model                             |
-| init   |         | initial Structure                      |
-| seeds  |         | resample the traj with different seeds |
-| time   |         | sample time [ps]                       |
-| every  |         | sample every [ps]                      |
+| Inputs    | Default | Description                            |
+|-----------|---------|----------------------------------------|
+| inp       | `null`  | PiNN model                             |
+| init      | `null`  | initial Structure                      |
+| pinnSeeds | `1`     | resample the traj with different seeds |
+| pinnTime  | `5`     | sample time [ps]                       |
+| pinnEvery | `0.01`  | sample every [ps]                      |
 
 Outputs the sampled dataset.

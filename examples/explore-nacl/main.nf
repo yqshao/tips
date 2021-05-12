@@ -11,10 +11,13 @@ labelInp = 'label.lmp'
 params.publishDir = 'explore'
 params.augFilter  = '-vmax "e:-20" -amax "f:10"'
 params.resFilter  = '-vmax "e:-42" -amax "f:4"'
+// lammps specific params
 params.lmpEmap    = '1:1,2:8,3:11,4:17'
 params.lmpInit    = 'nacl.init'
 params.lmpData    = 'nacl.data'
 params.lmpSetting = 'nacl.setting'
+// pinn specific params
+params.pinnBatch  = '1'
 
 tipsDir = '../../nextflow'
 include {sampler} from "$tipsDir/adaptor" addParams(sampler:'lammps')

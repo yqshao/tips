@@ -7,15 +7,15 @@ params.publishMode     = 'link'
 include {fileList; getParams} from "$moduleDir/utils"
 
 trainDflts = [:]
-trainDflts.subDir        = '.'
-trainDflts.inp           = null
-trainDflts.ds            = null
-trainDflts.seed          = 0
-trainDflts.maxSteps      = '1000000'
-trainDflts.genDress      = true
-trainDflts.cacheData     = 'True'
-trainDflts.batchSize     = '10'
-trainDflts.shuffleBuffer = '500'
+trainDflts.subDir            = '.'
+trainDflts.inp               = null
+trainDflts.ds                = null
+trainDflts.seed              = 0
+trainDflts.maxSteps          = '1000000'
+trainDflts.genDress          = true
+trainDflts.pinnCache         = 'True'
+trainDflts.pinnBatch         = '10'
+trainDflts.pinnShuffler      = '500'
 trainDflts = getParams(trainDflts, params)
 process pinnTrain {
     label 'pinn'
@@ -38,9 +38,9 @@ process pinnTrain {
     fi
     pinn_train --model-dir='model' --params-file='model/params.yml'\
         --train-data='train.yml' --eval-data='eval.yml'\
-        --cache-data=$setup.cacheData\
-        --batch-size=$setup.batchSize\
-        --shuffle-buffer=$setup.shuffleBuffer\
+        --cache-data=$setup.pinnCache\
+        --batch-size=$setup.pinnBatch\
+        --shuffle-buffer=$setup.pinnShuffle\
         --train-steps=$setup.maxSteps\
         ${setup.genDress? "--regen-dress": ""}
     """
@@ -53,12 +53,12 @@ process pinnTrain {
 }
 
 sampleDflts = [:]
-sampleDflts.subDir       = '.'
-sampleDflts.inp          = null
-sampleDflts.init         = null
-sampleDflts.seeds        = 1
-sampleDflts.time         = 5
-sampleDflts.interv       = 0.01
+sampleDflts.subDir          = '.'
+sampleDflts.inp             = null
+sampleDflts.init            = null
+sampleDflts.pinnSampleSeeds = 1
+sampleDflts.pinnSampleTime  = 5
+sampleDflts.pinnSampleEvery = 0.01
 sampleDflts = getParams(sampleDflts, params)
 process pinnSample {
     label 'pinn'
@@ -85,16 +85,16 @@ process pinnSample {
     from ase.md.nptberendsen import NPTBerendsen
 
     calc = pinn.get_calc("${file(setup.inp)}/params.yml")
-    for seed in range($setup.seeds):
+    for seed in range($setup.pinnSeeds):
         rng = np.random.default_rng(seed)
         atoms = read("${file(setup.init)}")
         atoms.set_calculator(calc)
         MaxwellBoltzmannDistribution(atoms, 330.*units.kB, rng=rng)
         dt = 0.5 * units.fs
-        steps = int($setup.time*1e3*units.fs/dt)
+        steps = int($setup.pinnTime*1e3*units.fs/dt)
         dyn = NPTBerendsen(atoms, timestep=dt, temperature=330, pressure=1,
                           taut=dt * 100, taup=dt * 1000, compressibility=4.57e-5)
-        interval = int($setup.interv*1e3*units.fs/dt)
+        interval = int($setup.pinnEvery*1e3*units.fs/dt)
         dyn.attach(MDLogger(dyn, atoms, 'output.log', mode="a"), interval=interval)
         dyn.attach(Trajectory('output.traj', 'a', atoms).write, interval=interval)
         try:

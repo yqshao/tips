@@ -25,6 +25,7 @@ theme:
 markdown_extensions:
   - attr_list
   - admonition
+  - pymdownx.snippets
   - pymdownx.highlight
   - pymdownx.superfences:
      custom_fences:
