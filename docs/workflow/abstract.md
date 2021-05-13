@@ -56,46 +56,6 @@ include {trainer} from './tips/adapter'
 ```
 
 This is useful if you would like to reuse an active learning workflow, but
-replace certain module.
+replace certain module. More information can be found in
+[custom process](custom_process.md).
 
-## Template
-Below is a template for implementing a custom labeller for TIPS
-
-```groovy
-params.publishDir      = 'mymodule'
-params.publishMode     = 'link'
-
-include {getParams} from './tips/utils'
-
-defaults = [:]
-defaults.subDir = '.'
-defaults.inp    = null
-defaults.ds     = null
-defaults = getParams(defaults, params)
-process labeller {
-    publishDir {"$params.publishDir/$setup.subDir"}, mode: params.publishMode
-
-    input:
-    tuple val(meta), val(input)
-
-    output:
-    tuple val{meta}, file("output") 
-
-    script:
-    setup = getParams(defaults, inputs)
-    """
-    touch output
-    """
-}
-
-workflow {
-    labeller([null, [:]])
-}
-```
-
-- defaults holds all the default inputs for `trainer`
-- parameters from the command line will overwrite the default values
-- input channels update the defaults again as the actual input
-- the default workflow invokes the workflow with an empty input
-- `subDir` is a special options, it allows a "main" workflow to redirect the
-  output of a sub-workflow.

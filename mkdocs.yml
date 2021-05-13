@@ -3,6 +3,7 @@ nav:
   - Introduction: index.md
   - Workflow:
     - Overview: workflow/overview.md
+    - Patterns: workflow/patterns.md
     - Abstract: workflow/abstract.md
     - Strategies:
         - tips/explore: workflow/explore.md
@@ -10,6 +11,8 @@ nav:
         - tips/tips: workflow/tips.md
         - tips/pinn: workflow/pinn.md
         - tips/lammps: workflow/lammps.md
+    - Development:
+        - Custom process: workflow/custom_process.md
   - CLI:
     - Overview: cli/overview.md
     - Commands:
