@@ -33,7 +33,6 @@ workflow explore {
 
     main:
     condition = {it[0].iter>=params.maxIter.toInteger()}
-    condition2 = {it[0].iter>=params.maxIter.toInteger()-1}
     defaults = getParams(defaults, params)
     setup = inputs.map{[it[1]+[meta:it[0]], getParams(defaults, it[1])]}
         .flatMap{(1..it[1].trainSeeds.toInteger()).collect(seed->[it[0]+[seed:seed], it[1]])}
