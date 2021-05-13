@@ -15,8 +15,8 @@ nav:
     - Commands:
       - convert: cli/convert.md
       - filter: cli/filter.md
-plugins:
-  - mermaid2
+    - File formats:
+      - LAMMPS: cli/lammps.md
 theme:
   name: material
   features:
@@ -27,10 +27,6 @@ markdown_extensions:
   - admonition
   - pymdownx.snippets
   - pymdownx.highlight
-  - pymdownx.superfences:
-     custom_fences:
-       - name: mermaid
-         class: mermaid
-         format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.superfences
 extra_css:
-  - stylesheets/extra.css
+  - css/extra.css

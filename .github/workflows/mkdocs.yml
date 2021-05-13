@@ -16,4 +16,3 @@ jobs:
         uses: yqshao/mkdocs-deploy-gh-pages@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REQUIREMENTS: requirements-dev.txt

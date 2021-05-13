@@ -1,8 +1,9 @@
-# `tips/lammps`
+# tips/lammps
 
-This workflow implements the `sampler` and `labeller` process with LAMMPS.
-LAMMPS allow for a flexible input format. Typically, the binary is run with an
-input script that holds all the information required for a simulation:
+This module implements the `sampler` and `labeller` process with
+[LAMMPS](https://lammps.sandia.gov/) molecular dynamics code. LAMMPS allow for a
+flexible input format. Typically, the binary is run with an input script
+(`input.lmp` here) that holds all the information required for a simulation:
 
 ```shell
 mpirun lmp_mpi -in input.lmp
@@ -33,7 +34,7 @@ The `init` file will be saved as `input.coord` for `lammpsSample` workflow and
  TIPS about the units and element specification in the LAMMPS simulations.
 
 You can find some the example input files for LAMMPS in the [example
-folder](https://github.com/yqshao/tips/examples/explore-nacl).
+folder](https://github.com/yqshao/tips/tree/master/examples/explore-nacl).
 
 ### lammpsSample
 
@@ -47,19 +48,19 @@ folder](https://github.com/yqshao/tips/examples/explore-nacl).
 | lmpData    | `null`   | LAMMPS data             |
 | lmpSetting | `null`   | LAMMPS setting          |
 
-    Outputs the sampled trajectory.
+Outputs the sampled trajectory.
 
 ### lammpsLabel
 Label a dataset with Lammps
 
-| Inputs     | Default | Description             |
-|------------|---------|-------------------------|
-| ds         | `null`  | dataset to label        |
-| inp        | `null`  | LAMMPS input script     |
-| lmpEmap    | `''`    | relabel LAMMPS elements |
-| lmpUnits   | `'real` | LAMMPS units            |
-| lmpInit    | `null`  | LAMMPS initialization   |
-| lmpData    | `null`  | LAMMPS data             |
-| lmpSetting | `null`  | LAMMPS setting          |
+| Inputs     | Default  | Description             |
+|------------|----------|-------------------------|
+| ds         | `null`   | dataset to label        |
+| inp        | `null`   | LAMMPS input script     |
+| lmpEmap    | `''`     | relabel LAMMPS elements |
+| lmpUnits   | `'real'` | LAMMPS units            |
+| lmpInit    | `null`   | LAMMPS initialization   |
+| lmpData    | `null`   | LAMMPS data             |
+| lmpSetting | `null`   | LAMMPS setting          |
 
 Outputs the labelled dataset.

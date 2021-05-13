@@ -13,8 +13,8 @@ body {
 }
 
 .center {
-    display: block;
-    margin: 0 auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .md-sidebar{
@@ -31,17 +31,17 @@ body {
 }
 
 .md-typeset__table {
-    min-width: 100%;
+  min-width: 100%;
 }
 
 .md-typeset table:not([class]) {
-    display: table;
-    font-size: 90%;
+  display: table;
+  font-size: 90%;
 }
 
 .md-typeset table:not([class]) td{
-    padding: 10px 20px;
+  padding: 10px 20px;
 }
 .md-typeset table:not([class]) th{
-    padding: 10px 20px;
+  padding: 10px 20px;
 }

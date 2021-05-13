@@ -1,7 +1,7 @@
-#  `tips/explore`
+# tips/explore
 
-`tips/explore` is a workflow in which a model is used to sample the
-configuration space.
+The module implements the explore workflow in which a model is used to sample
+the configuration space.
 
 ![](explore.svg){: style="min-width:80%" .center}
 
@@ -11,21 +11,19 @@ dataflow channels, the final model will be the output for each set of inputs.
 
 ## Options
 
-| Inputs       | Default  | Description                      |
-|--------------|----------|----------------------------------|
-| trainer      | "pinn"   | an abstract trainer              |
-| sampler      | "pinn"   | an abstract sampler              |
-| labeller     | "lammps" | an abstract labeller             |
-| maxIter      | 10       | max iteration                    |
-| initDs       | null     | initial dataset                  |
-| trainInit    | null     | initial input for trainer        |
-| trainParam   | null     | extra params for trainer         |
-| trainSeeds   | 3        | number of seeds for qbc          |
-| trainSteps   | 200000   | initial training steps           |
-| retrainIter  | 200000   | retrain steps after augmentation |
-| sampleInit   | null     | initial structure for sampler    |
-| sampleParams | null     | extra params for sampler         |
-| labelInp     | null     | input for labbeller              |
+| Inputs      | Default   | Description                      |
+|-------------|-----------|----------------------------------|
+| trainer     | `"pinn"`  | an abstract trainer              |
+| sampler     | `"pinn"`  | an abstract sampler              |
+| labeller    | `"lammp"` | an abstract labeller             |
+| maxIter     | `0`       | max iteration                    |
+| initDs      | `null`    | initial dataset                  |
+| trainInit   | `null`    | initial input for trainer        |
+| trainSeeds  | `2`       | number of seeds for qbc          |
+| trainSteps  | `200000 ` | initial training steps           |
+| retrainIter | `200000 ` | retrain steps after augmentation |
+| sampleInit  | `null   ` | initial structure for sampler    |
+| labelInp    | `null   ` | input for labbeller              |
 
 
 ## Usage

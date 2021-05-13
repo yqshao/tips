@@ -4,12 +4,12 @@ Three types of abstract workflows are implemented in TIPS, they are workflows
 that follows certain input/output patterns, additional parameters can be present
 in the inputs if necessary.
 
-| Type     | Required Inputs                              | Output  |
-|----------|----------------------------------------------|---------|
-| trainer  | [inp: model, ds:dataset, maxIter: iter, ...] | models  |
-| sampler  | [inp: model, init: structure, ...]           | dataset |
-| labeller | [inp: model, ds:dataset, ... ]               | dataset |
-| filter   | [params: parameters, ds:dataset, ...]        | dataset |
+| Type     | Required Inputs                                | Output  |
+|----------|------------------------------------------------|---------|
+| trainer  | `[inp: model, ds:dataset, maxIter: iter, ...]` | models  |
+| sampler  | `[inp: model, init: structure, ...]`           | dataset |
+| labeller | `[inp: model, ds:dataset, ... ]`               | dataset |
+| filter   | `[params: parameters, ds:dataset, ...]`        | dataset |
 
 ## Usage
 
