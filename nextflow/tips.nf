@@ -9,6 +9,7 @@ defaults = [:]
 defaults.subDir       = '.'
 defaults.ds           = null
 defaults.inp          = ''
+defaults = getParams(defaults, params)
 process tipsFilter {
     publishDir {"$params.publishDir/$setup.subDir"}, mode: params.publishMode
     label 'tips'

@@ -133,24 +133,8 @@ def filterds(filename, log, units, emap, format, output, oformat, **kwargs):
     np.savetxt(f'{output}.idx', idx, fmt='%i')
     writer.finalize()
 
-
-@click.command(name='merge', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
-@click.argument('filename', nargs=-1)
-@click.option('-o', '--output', metavar='', default='dataset')
-@click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-def mergeds(filename, output, oformat):
-    writer = get_writer(output, format=oformat)
-    for fname in filename:
-        ds = read(fname, format='pinn')
-        for data in ds:
-            writer.add(data)
-    writer.finalize()
-
 main.add_command(convertds)
-main.add_command(splitds)
 main.add_command(filterds)
-main.add_command(mergeds)
-main.add_command(qbc)
 main.add_command(version)
 
 if __name__ == '__main__':

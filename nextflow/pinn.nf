@@ -15,7 +15,7 @@ trainDflts.maxSteps          = '1000000'
 trainDflts.genDress          = true
 trainDflts.pinnCache         = 'True'
 trainDflts.pinnBatch         = '10'
-trainDflts.pinnShuffler      = '500'
+trainDflts.pinnShuffle       = '500'
 trainDflts = getParams(trainDflts, params)
 process pinnTrain {
     label 'pinn'
@@ -53,12 +53,12 @@ process pinnTrain {
 }
 
 sampleDflts = [:]
-sampleDflts.subDir          = '.'
-sampleDflts.inp             = null
-sampleDflts.init            = null
-sampleDflts.pinnSampleSeeds = 1
-sampleDflts.pinnSampleTime  = 5
-sampleDflts.pinnSampleEvery = 0.01
+sampleDflts.subDir    = '.'
+sampleDflts.inp       = null
+sampleDflts.init      = null
+sampleDflts.pinnSeeds = 1
+sampleDflts.pinnTime  = 5
+sampleDflts.pinnEvery = 0.01
 sampleDflts = getParams(sampleDflts, params)
 process pinnSample {
     label 'pinn'
