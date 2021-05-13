@@ -35,13 +35,13 @@ workflow{
 
 Below is a table of the abstract workflows available in TIPS.
 
-| Name   | trainer   | sampler      | labeller    | filter     |
-|--------|-----------|--------------|-------------|------------|
-| pinn   | pinnTrain | pinnSample   | pinnLabel   |            |
-| lammps |           | lammpsSample | lammpsLabel |            |
-| tips   |           |              |             | tipsFilter |
+| Name   | Processes                              | Description                 |
+|--------|----------------------------------------|-----------------------------|
+| tips   | `tipsFilter`                           | Filters implemented in TIPS |
+| pinn   | `pinnTrain`, `pinnSample`, `pinnLabel` | The PiNN AML package        |
+| lammps | `lammpsSample`, `lammpsLabel`          | The LAMMPS MD code          |
 
-Their options and explanations can be found in the implementations section.
+Their description and extra options can be found in the implementations section.
 
 ## Customization
 It is also possible to specify a custom workflow in the workflow by changing the
