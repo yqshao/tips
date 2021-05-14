@@ -54,6 +54,48 @@ process pinnTrain {
     """
 }
 
+labelDflts = [:]
+labelDflts.subDir       = '.'
+labelDflts.inp          = null
+labelDflts.ds           = null
+labelDflts = getParams(labelDflts, params)
+process pinnLabel {
+    label 'pinn'
+    publishDir {"$params.publishDir/$setup.subDir"}, mode: params.publishMode
+
+    input:
+    tuple val(meta), val(inputs)
+
+    output:
+    tuple val(meta), path('output.xyz')
+
+    script:
+    setup = getParams(labelDflts, inputs)
+    """
+    #!/usr/bin/env python3
+    import pinn, yaml, os
+    import tensorflow as tf
+    from ase import units
+    from ase.io import read, write
+    os.symlink("${file(setup.inp)}", "model")
+    calc = pinn.get_calc("model")
+    traj = read("${file(setup.ds)}", index=':')
+    with open('output.xyz', 'w') as f:
+        for atoms in traj:
+            atoms.wrap()
+            atoms.set_calculator(calc)
+            atoms.get_potential_energy()
+            write(f, atoms, format='extxyz', append='True')
+    """
+
+    stub:
+    setup = getParams(labelDflts, inputs)
+    """
+    #!/usr/bin/env bash
+    touch output.xyz
+    """
+}
+
 sampleDflts = [:]
 sampleDflts.subDir    = '.'
 sampleDflts.inp       = null
@@ -76,7 +118,7 @@ process pinnSample {
     setup = getParams(sampleDflts, inputs)
     """
     #!/usr/bin/env python3
-    import pinn
+    import pinn, os
     import numpy as np
     import tensorflow as tf
     from ase import units
@@ -86,7 +128,8 @@ process pinnSample {
     from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
     from ase.md.nptberendsen import NPTBerendsen
 
-    calc = pinn.get_calc("${file(setup.inp)}/params.yml")
+    os.symlink("${file(setup.inp)}", "model")
+    calc = pinn.get_calc("model")
     for seed in range($setup.pinnSeeds):
         rng = np.random.default_rng(seed)
         atoms = read("${file(setup.init)}")

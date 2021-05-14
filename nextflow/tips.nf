@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 
 params.publishDir      = 'tips'
 params.publishMode     = 'link'
-include {getParams} from "$moduleDir/utils"
+include {fileList; getParams} from "$moduleDir/utils"
 
 defaults = [:]
 defaults.subDir       = '.'
@@ -24,7 +24,7 @@ process tipsFilter {
     setup = getParams(defaults, inputs)
     """
     #!/usr/bin/env bash
-    tips filter $setup.ds $setup.inp -o output -of xyz
+    tips filter ${fileList(setup.ds)} $setup.inp -o output -of xyz
     """
 
     stub:
