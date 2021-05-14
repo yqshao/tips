@@ -58,43 +58,37 @@ def convertds(filename, format, output, oformat, shuffle, seed, log, units, emap
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
+@click.option('-a', '--algo', metavar='', default='naive', help='filtering algorithm')
 @click.option('-vmin', '--val-min', metavar='', default='', help='minimum value')
 @click.option('-vmax', '--val-max', metavar='', default='', help='maximum value')
 @click.option('-amin', '--abs-min', metavar='', default='', help='minimum absolute value')
 @click.option('-amax', '--abs-max', metavar='', default='', help='maximum absolute value')
-def filterds(filename, log, units, emap, format, output, oformat, **kwargs):
+def filterds(filename, log, units, emap, format, output, oformat, algo, **kwargs):
     """\b
     Algorithms available:
     - 'naive': filter by the error tolerance
-    - 'fps': furthest point sampling [not implemented yet]
-
-    For the naive algorithm, max and min values can be specified for value or
-    absolute values, if one component exceeds the range for a data point, that
-    data point is filtered out.
+    - 'qbc': filter by the standard deviation across datasets
     """
+    import itertools
     import numpy as np
-    filterFns = {
-        'val_max': lambda data, tol: np.any(data>tol),
-        'val_min': lambda data, tol: np.any(data<tol),
-        'abs_max': lambda data, tol: np.any(np.abs(data)>tol),
-        'abs_min': lambda data, tol: np.any(np.abs(data)<tol)}
-    def filter_fn(data, key, tag, tol):
-        if tag.startswith('!'):
-            return not filterFns[key](data[f"{tag[1:]}_data"], tol)
-        else:
-            return filterFns[key](data[f"{tag}_data"], tol)
+    from tips.filters import qbc_filter, naive_filter
+
     writer = get_writer(output, format=oformat)
-    fnList = [lambda data,k=key,t=tag,tol=tol: filter_fn(data, k, t, float(tol))
-              for key, val in kwargs.items() if val
-              for tag, tol in map(lambda x: x.split(':'), val.split(','))]
-    idx = []
-    for fname in filename:
-        ds = read(fname, log=log, format=format, emap=emap, units=units)
-        for i,data in enumerate(ds):
-            if not any([fn(data) for fn in fnList]):
-                writer.add(data)
-                idx.append(i)
-    np.savetxt(f'{output}.idx', idx, fmt='%i')
+    datasets = [read(fname, log=log, format=format, emap=emap, units=units)
+                for fname in filename]
+    if algo=='qbc':
+        ds = qbc_filter(zip(*datasets), **kwargs)
+    elif algo=='naive':
+        ds = naive_filter(itertools.chain(*datasets), **kwargs)
+    else:
+        raise f"Unknown filter {algo}"
+
+    indices = []
+    for idx, data in ds:
+        indices.append(idx)
+        writer.add(data)
+
+    np.savetxt(f'{output}.idx', indices, fmt='%i')
     writer.finalize()
 
 main.add_command(convertds)
