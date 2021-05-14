@@ -15,6 +15,7 @@ trainDflts.maxSteps          = '1000000'
 trainDflts.genDress          = true
 trainDflts.pinnCache         = 'True'
 trainDflts.pinnBatch         = '10'
+trainDflts.pinnCkpts         = '1'
 trainDflts.pinnShuffle       = '500'
 trainDflts = getParams(trainDflts, params)
 process pinnTrain {
@@ -34,7 +35,7 @@ process pinnTrain {
     if [ ! -f ${file(setup.inp)}/params.yml ];  then
         mkdir -p model; cp ${file(setup.inp)} model/params.yml
     else
-        cp -r ${file(setup.inp)} model
+        cp -r ${file(setup.inp)} model; rm -r model/events* model/eval
     fi
     pinn_train --model-dir='model' --params-file='model/params.yml'\
         --train-data='train.yml' --eval-data='eval.yml'\
@@ -42,6 +43,7 @@ process pinnTrain {
         --batch-size=$setup.pinnBatch\
         --shuffle-buffer=$setup.pinnShuffle\
         --train-steps=$setup.maxSteps\
+        --max-ckpts=$setup.pinnCkpts\
         ${setup.genDress? "--regen-dress": ""}
     """
 

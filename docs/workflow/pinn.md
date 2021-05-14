@@ -6,15 +6,17 @@ PiNN model directory, for the `pinnTrain` process, the inp can
 
 ### pinnTrain
 
-| Inputs  | Default   | Description               |
-|---------|-----------|---------------------------|
-| inp     | `null`    | PiNN model or params file |
-| ds      | `null`    | trianing set              |
-| batch   | `1`       | batch size                |
-| maxIter | `1000000` | max iteration [in steps]  |
+| Inputs      | Default   | Description                                |
+|-------------|-----------|--------------------------------------------|
+| inp         | `null`    | PiNN model or params file                  |
+| ds          | `null`    | trianing set                               |
+| maxSteps    | `1000000` | max iteration [in steps]                   |
+| pinnCache   | `"True"`  | cache preprocessed dataset during training |
+| pinnBatch   | `10`      | batch size                                 |
+| pinnCkpts   | `1`       | max number of checkpoints to save          |
+| pinnShuffle | `500`     | shuffle buffer size                        |
 
 Outputs the final model folder with checkpoints.
-
 
 ### pinnLabel
 Label a dataset with PiNN
@@ -28,12 +30,12 @@ Outputs the labelled dataset.
 
 ### pinnSample
 
-| Inputs | Default | Description                            |
-|--------|---------|----------------------------------------|
-| inp    | `null`  | PiNN model                             |
-| init   | `null`  | initial Structure                      |
-| seeds  | `1`     | resample the traj with different seeds |
-| time   | `5`     | sample time [ps]                       |
-| every  | `0.01`  | sample every [ps]                      |
+| Inputs    | Default | Description                            |
+|-----------|---------|----------------------------------------|
+| inp       | `null`  | PiNN model                             |
+| init      | `null`  | initial Structure                      |
+| pinnSeeds | `1`     | resample the traj with different seeds |
+| pinnTime  | `5`     | sample time [ps]                       |
+| pinnEvery | `0.01`  | sample every [ps]                      |
 
 Outputs the sampled dataset.
