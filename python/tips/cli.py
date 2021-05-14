@@ -16,74 +16,38 @@ def version():
 
 @click.command(name='convert', context_settings=CONTEXT_SETTINGS, short_help='convert datasets')
 @click.argument('filename', nargs=-1)
-@click.option('--log', metavar='', default=None, help='lammps log (for energies)')
-@click.option('--units', metavar='', default=None, help='lammps units')
-@click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
 @click.option('-f', '--format', metavar='', default='auto', help='input format')
 @click.option('-o', '--output', metavar='', default='dataset')
 @click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-def convertds(filename, log, units, format, output, oformat, emap):
-    writer = get_writer(output, format=oformat)
-    for fname in filename:
-        dataset = read(fname, format=format, log=log, emap=emap, units=units)
-        with click.progressbar(dataset, show_pos=True, bar_template='Converting: %(info)s structures.') as ds:
-            for datum in ds:
-                writer.add(datum)
-    writer.finalize()
-
-@click.command(name='split', context_settings=CONTEXT_SETTINGS, short_help='split datasets')
-@click.argument('filename', nargs=-1)
-@click.option('--log', metavar='', default=None, help='lammps log (for energies)')
-@click.option('--units', metavar='', default=None, help='lammps units')
-@click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
-@click.option('-s', '--splits', metavar='', default='train:8,test:2', help='name and ratio of splits')
 @click.option('--shuffle', metavar='', default=True, help='shuffle the dataset')
 @click.option('--seed', metavar='', default='0',  type=int, help='seed for random number (int)')
-@click.option('-f', '--format', metavar='', default='auto', help='input format')
-@click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-def splitds(filename, log, units, format, splits, shuffle, seed, oformat, emap):
-    import random, itertools, math, time
-    writers = [get_writer(s.split(':')[0], format=oformat) for s in splits.split(',')]
-    weights = [float(s.split(':')[1]) for s in splits.split(',')]
-    for fname in filename:
-        dataset = read(fname, format=format, log=log, emap=emap, units=units)
-        dataset, ds4count = itertools.tee(dataset)
-        count = sum(1 for _ in ds4count)
-        writerList = sum([[writer]*math.ceil(count*weight/sum(weights))
-                          for writer, weight in zip(writers, weights)],[])
-        if shuffle:
-            random.seed(seed)
-            random.shuffle(writerList)
-        with click.progressbar(dataset, length=count, show_pos=True) as ds:
-            for datum, writer in zip(ds, writerList):
-                writer.add(datum)
-    [writer.finalize() for writer in writers]
-
-@click.command(name='qbc', context_settings=CONTEXT_SETTINGS, short_help='query by committee')
-@click.argument('filename', nargs=-1)
 @click.option('--log', metavar='', default=None, help='lammps log (for energies)')
 @click.option('--units', metavar='', default=None, help='lammps units')
 @click.option('--emap', metavar='', default=None, help='remap lammps elements, e.g. "1:1,2:8"')
-@click.option('-o', '--output', metavar='', default='dataset')
-@click.option('-f', '--format', metavar='', default='auto', help='input format')
-@click.option('-of', '--oformat', metavar='', default='pinn', help='output format')
-@click.option('-t', '--tags', metavar='', default='e,f', help='tags to compute variance')
-def qbc(filename, log, units, emap, format, output, oformat, tags):
-    """Label errors according to variable across datasets
+def convertds(filename, format, output, oformat, shuffle, seed, log, units, emap):
+    import itertools, random, math
+    if ':' in output:
+        split = True
+        writers = [get_writer(s.split(':')[0], format=oformat) for s in output.split(',')]
+        weights = [float(s.split(':')[1]) for s in output.split(',')]
+    else:
+        split = False
+        writers = [get_writer(output, format=oformat)]
+        writerList = itertools.repeat(writers[0])
 
-    Not that energies for lammps dumps will not be handeled correctly for now
-    """
-    import numpy as np
-    writer = get_writer(output, format=oformat)
-    ds = [read(fname, format=format, emap=emap, units=units) for fname in filename]
-    for data in zip(*ds):
-        for tag in tags.split(','):
-            for other in data[1:]:
-                assert np.allclose(other['coord'],data[0]['coord']), 'Inputs does not match'
-            error = np.std([datum[f'{tag}_data'] for datum in data], axis=0)
-            data[0].update({f'{tag}_data': error})
-        writer.add(data[0])
-    writer.finalize()
+    for fname in filename:
+        dataset = read(fname, format=format, log=log, emap=emap, units=units)
+        if split:
+            dataset, ds4count = itertools.tee(dataset)
+            count = sum(1 for _ in ds4count)
+            writerList = sum([[writer]*math.ceil(count*weight/sum(weights))
+                              for writer, weight in zip(writers, weights)],[])
+            if shuffle:
+                random.seed(seed)
+                random.shuffle(writerList)
+        for datum, writer in zip(dataset, writerList):
+            writer.add(datum)
+    [writer.finalize() for writer in writers]
 
 
 @click.command(name='filter', context_settings=CONTEXT_SETTINGS, short_help='filter datasets')
