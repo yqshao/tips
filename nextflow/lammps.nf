@@ -14,6 +14,7 @@ labelDflts.lmpData      = null
 labelDflts.lmpSetting   = null
 labelDflts.lmpEmap      = ''
 labelDflts.lmpUnits     = 'real'
+labelDflts.lmpCmd       = 'lmp_mpi'
 labelDflts = getParams(labelDflts, params)
 process lammpsLabel {
     label 'lammps'
@@ -34,7 +35,7 @@ process lammpsLabel {
     ln -s ${file(setup.lmpData)} input.data
     ln -s ${file(setup.lmpSetting)} input.setting
     tips convert ${file(setup.ds)} --emap '$remap' -o input -of lammps
-    lmp_mpi -in ${file(setup.inp)} || echo LAMMPS aborted
+    $setup.lmpCmd -in ${file(setup.inp)} || echo LAMMPS aborted
     sed -i '/WARNING/d' output.log
     tips convert output.dump --log output.log -o output -of xyz\
         --units $setup.lmpUnits --emap '$setup.lmpEmap'
@@ -51,11 +52,13 @@ process lammpsLabel {
 sampleDflts = [:]
 sampleDflts.subDir      = '.'
 sampleDflts.inp         = null
+sampleDflts.init        = null
 sampleDflts.lmpInit     = null
 sampleDflts.lmpData     = null
 sampleDflts.lmpSetting  = null
-sampleDflts.lmpUnits       = 'real'
-sampleDflts.lmpEmap        = ''
+sampleDflts.lmpUnits    = 'real'
+sampleDflts.lmpEmap     = ''
+sampleDflts.lmpCmd      = 'lmp_mpi'
 sampleDflts = getParams(sampleDflts, params)
 process lammpsSample {
     label 'lammps'
@@ -74,7 +77,7 @@ process lammpsSample {
     ln -s ${file(setup.lmpInit)} input.init
     ln -s ${file(setup.lmpData)} input.data
     ln -s ${file(setup.lmpSetting)} input.setting
-    lmp_mpi -in ${file(setup.inp)} || echo LAMMPS aborted
+    $setup.lmpCmd -in ${file(setup.inp)} || echo LAMMPS aborted
     sed -i '/WARNING/d' output.log
     tips convert output.dump --log output.log \
       --units $setup.lmpUnits --emap '$setup.lmpEmap' -o output -of xyz
