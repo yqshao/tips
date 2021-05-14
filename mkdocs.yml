@@ -1,6 +1,7 @@
 site_name: TIPS Documentation
 nav:
   - Introduction: index.md
+  - Roadmap: roadmap.md
   - Workflow:
     - Overview: workflow/overview.md
     - Patterns: workflow/patterns.md
