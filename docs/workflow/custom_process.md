@@ -1,12 +1,32 @@
 # Custom process
 
-## Notes
-- defaults holds all the default inputs for `trainer`
-- parameters from the command line will overwrite the default values
-- input channels update the defaults again as the actual input
-- the default workflow invokes the workflow with an empty input
-- `subDir` is a special options, it allows a "main" workflow to redirect the
-  output of a sub-workflow.
+Some basics about processes in TIPS is introduced in [patterns](patterns.md). In
+this document there are some more suggestions if you are to develop a custom
+process that fits into the TIPS suite.
+
+## subDir
+
+`subDir` is a special input key that TIPS uses in strategies to control the
+output folder in the sub-workflows. For example, the `explore` strategy will
+organize the training and sampling results according to iterations models. In
+you custom module, you might want to allow this behavior by setting the
+publishDir to `$params.publishDir/$setup.subDir`.
+
+## File formats
+
+At this point most processes outputs are converted to `.xyz` formats, which is
+quite readable handy for debugging. Since in principle TIPS will be able to
+handle different formats of outputs, consider converting them to a specific
+format before running your code, and converting them back to `.xyz` after you
+have done.
+
+## stub
+
+As of 20.11.0-edge, Nextflow supports a [`stub`
+directive](https://www.nextflow.io/docs/edge/process.html#stub) which allows for
+providing a dummy command for each process. All TIPS processes comes with this
+directive, if you are working on a workflow based on TIPS, you can test it with
+a dry run `nf run ... -stub`.
 
 ## Template
 Below is a template for implementing a custom labeller for TIPS
@@ -15,7 +35,7 @@ Below is a template for implementing a custom labeller for TIPS
 params.publishDir      = 'mymodule'
 params.publishMode     = 'link'
 
-include {getParams} from './tips/utils'
+include {getParams} from "$tipdDir/utils"
 
 defaults = [:]
 defaults.subDir  = '.'
@@ -49,6 +69,4 @@ workflow {
     labeller([null, [:]])
 }
 ```
-
-
 
