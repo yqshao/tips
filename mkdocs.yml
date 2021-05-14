@@ -20,6 +20,7 @@ nav:
       - convert: cli/convert.md
       - filter: cli/filter.md
     - File formats:
+      - General: cli/formats.md
       - LAMMPS: cli/lammps.md
 theme:
   name: material
