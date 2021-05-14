@@ -34,13 +34,16 @@ switch (params.trainer) {
 switch (params.sampler) {
     case {it.startsWith('./')}:
         include {sampler} from params.sampler;
-        break
+        break;
     case 'pinn':
         include {pinnSample as sampler} from "$moduleDir/pinn";
-        break
+        break;
     case 'lammps':
         include {lammpsSample as sampler} from "$moduleDir/lammps";
-        break
+        break;
+    case 'gromacs':
+        include {gromacsSample as sampler} from "$moduleDir/gromacs";
+        break;
     default:
         throw new Exception("Unkown sampler $params.sampler.");
 }
@@ -48,13 +51,16 @@ switch (params.sampler) {
 switch (params.labeller) {
     case {it.startsWith('./')}:
         include {labeller} from params.labeller;
-        break
+        break;
     case 'pinn':
         include {pinnLabel as labeller} from "$moduleDir/pinn";
-        break
+        break;
     case 'lammps':
         include {lammpsLabel as labeller} from "$moduleDir/lammps";
-        break
+        break;
+    case 'gromacs':
+        include {gromacsLabel as labeller} from "$moduleDir/gromacs";
+        break;
     default:
         throw new Exception("Unkown labeller $params.labeller.");
 }

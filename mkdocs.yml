@@ -11,6 +11,7 @@ nav:
         - tips/tips: workflow/tips.md
         - tips/pinn: workflow/pinn.md
         - tips/lammps: workflow/lammps.md
+        - tips/gromacs: workflow/gromacs.md
     - Development:
         - Custom process: workflow/custom_process.md
   - CLI:

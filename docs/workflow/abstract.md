@@ -9,7 +9,12 @@ in the inputs if necessary.
 | trainer  | `[inp: model, ds:dataset, maxIter: iter, ...]` | models  |
 | sampler  | `[inp: model, init: structure, ...]`           | dataset |
 | labeller | `[inp: model, ds:dataset, ... ]`               | dataset |
-| filter   | `[params: parameters, ds:dataset, ...]`        | dataset |
+| filter   | `[inp: filter, ds:dataset, ...]`               | dataset |
+
+The structure and dataset files (`ds` or `init`) are converted by the TIPS CLI
+when they are parsed across workflows, in principle any file that can be
+consumed by the TIPS CLI should work. On the other hand, the `inp` are inputs
+that are usually specific to the exact process used.
 
 ## Usage
 
