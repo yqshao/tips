@@ -54,7 +54,14 @@ process aseMD {
       pressure=float(setup['pressure'])
       compressibility=float(setup['compressibility'])
 
-      calc = pinn.get_calc("$model")
+      ${(model instanceof Path) ?
+      "calc = pinn.get_calc('$model')" :
+      """
+      models = ["${model.join('", "')}"]
+      calcs = [pinn.get_calc(model) for model in models]
+      calc = AverageCalculator(calcs)
+      """}
+
       atoms = read("$init")
       atoms.set_calculator(calc)
       MaxwellBoltzmannDistribution(atoms, T*units.kB)
