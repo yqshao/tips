@@ -1,0 +1,52 @@
+site_name: T<span>IPS</span>
+repo_name: teoroo-cmc/tips
+repo_url: https://github.com/teoroo-cmc/tips/
+site_url: https://teoroo-cmc.github.io/tips/
+
+nav:
+  - Home: index.md
+  - CLI:
+    - convert: cli/convert.md
+    - subsample: cli/subsample.md
+    - utils: cli/utils.md
+  - Python:
+    - tips.bias: python/bias.md
+    - tips.io:
+      - generic: python/io/generic.md
+      - ase: python/io/ase.md
+      - cp2k: python/io/cp2k.md
+      - lammps: python/io/lammps.md
+      - runner: python/io/runner.md
+
+theme:
+  name: flux
+
+plugins :
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+  - bibtex:
+      bib_file: "docs/references.bib"
+      csl_file: "docs/jcp.csl"
+
+markdown_extensions:
+  - attr_list
+  - footnotes
+  - admonition
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.emoji
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight
+  - pymdownx.tabbed
+
+extra_javascript:
+  - js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
