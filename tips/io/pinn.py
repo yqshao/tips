@@ -8,6 +8,7 @@ _pinn2tips = {
     "e_data": "energy",
     "f_data": "force",
     "s_data": "stress",
+    "d_data": "dipole",
 }
 
 
@@ -71,14 +72,15 @@ def ds2pinn(ds, fname):
 
     def tips2pinn(dict_tips):
         convert = {
+            "elem": "elems",
+            "coord": "coord",
+            "cell": "cell",
             "force": "f_data",
             "energy": "e_data",
             "stress": "s_data",
-            "elem": "elems",
+            "dipole": "d_data",
         }
-        dict_pinn = {
-            k if (k not in convert) else convert[k]: v for k, v in dict_tips.items()
-        }
+        dict_pinn = {convert[k]: v for k, v in dict_tips.items() if k in convert}
         return dict_pinn
 
     spec = deepcopy(tips2pinn(ds.meta["spec"]))
