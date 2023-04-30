@@ -206,9 +206,10 @@ class Dataset:
         """Subsample a dataet according to certain variables
 
         Args:
-            strategy (str): 'uniform' or 'sorted'
+            strategy (str): 'head', 'tail', 'uniform' or 'sorted'
             nsample (int): number of samples to take
             psample (float): percentile of samples to take
+            sort_key (str): key used to sort the data
 
         Returns:
             idx (int): inidices of the selected samples
@@ -229,14 +230,20 @@ class Dataset:
             nsample <= size
         ), f"Requested sample {nsample} larger than dataset size {size}."
 
-        if strategy == "uniform":
+        if strategy == "head":
+            idx = np.arange(0, nsample, dtype=int)
+            dataset = self[slice(0, nsample)]
+        elif strategy == "tail":
+            idx = np.arange(size - nsample, size, dtype=int)
+            dataset = self[slice(size - nsample, size)]
+        elif strategy == "uniform":
             step = math.floor(size / nsample)
             idx = np.array(list(range(0, step * nsample, step)))
             dataset = self[slice(0, step * nsample, step)]
         elif strategy == "sorted":
             if sort_key.startswith("-"):
                 key = sort_key[1:]
-                sign = -1
+                sign = - 1
             else:
                 key = sort_key
                 sign = 1
