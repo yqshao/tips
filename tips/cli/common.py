@@ -38,9 +38,9 @@ write_opts = _group_options(
 )
 
 subsample_opts = _group_options(
-    click.option("--strategy", default="uniform", help="subsampling strategy"),
-    click.option("--nsample", default=None, type=int, help="number to subsample"),
+    click.option("--subsample", default=None, help="subsampling strategy"),
     click.option("--psample", default=None, type=float, help="percentage to subsample"),
+    click.option("--nsample", default=None, type=int, help="number to subsample"),
     click.option("--sort-key", default="force_std", help="key for the sorted strategy"),
 )
 

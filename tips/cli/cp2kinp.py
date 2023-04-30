@@ -25,7 +25,7 @@ def _gen_cp2k_inp(fin, fout, datum):
         f.writelines(lines)
 
 
-@click.command(name="mkcp2kinp", short_help="make CP2K inputs from datasets")
+@click.command(name="cp2kinp", short_help="make CP2K inputs from datasets")
 @click.argument("inp", nargs=1)
 @click.argument("dataset", nargs=1)
 @load_opts
@@ -34,7 +34,7 @@ def _gen_cp2k_inp(fin, fout, datum):
     "--subsample", is_flag=True, default=False, help="activate subsample mode"
 )
 @subsample_opts
-def mkcp2kinp(
+def cp2kinp(
     inp,
     dataset,
     fmt,

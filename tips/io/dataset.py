@@ -222,7 +222,7 @@ class Dataset:
         size = self.meta["size"]
         assert (nsample is None) != (
             psample is None
-        ), "Must specify one of nsample or psample."
+        ), "Must specify only one of nsample or psample."
         if psample is not None:
             nsample = int(size / 100.0 * psample)
         assert (
