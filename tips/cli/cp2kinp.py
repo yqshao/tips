@@ -29,10 +29,6 @@ def _gen_cp2k_inp(fin, fout, datum):
 @click.argument("inp", nargs=1)
 @click.argument("dataset", nargs=1)
 @load_opts
-@click.option("--idx", default=-1, help="index of sample")
-@click.option(
-    "--subsample", is_flag=True, default=False, help="activate subsample mode"
-)
 @subsample_opts
 def cp2kinp(
     inp,
@@ -40,10 +36,7 @@ def cp2kinp(
     fmt,
     emap,
     # ^ load_opts
-    idx,
     subsample,
-    strategy,
-    # ^ options for this command
     nsample,
     psample,
     sort_key,
@@ -51,8 +44,8 @@ def cp2kinp(
 ):
     ds = load_ds_with_opts(dataset, fmt, emap)
     if not subsample:
-        _gen_cp2k_inp(inp, "cp2k.inp", ds[idx])
+        _gen_cp2k_inp(inp, "cp2k.inp", ds[-1])
     else:
-        idx, subds = ds.subsample(strategy, nsample, psample, sort_key)
+        idx, subds = ds.subsample(subsample, nsample, psample, sort_key)
         for i, datum in zip(idx, subds):
             _gen_cp2k_inp(inp, f"{i}.inp", datum)
