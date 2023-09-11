@@ -1,0 +1,314 @@
+<!--
+  This Basic theme serves as an example for how to create other
+  themes by demonstrating the features with minimal HTML and CSS.
+  Comments like this will be through the code to explain briefly
+  what each feature is and point you to the MkDocs documentation
+  to find out more.
+-->
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>runner - TIPS</title>
+
+  <link rel="stylesheet" href="../../../css/theme.css">
+  <link rel="stylesheet" href="../../../css/pygments.css">
+  <link rel="icon" href="data:,">
+  
+    <link href="../../../assets/_mkdocstrings.css" rel="stylesheet">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;1,400;1,700&family=Noto+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+
+  <script>
+    var base_url = "../../..";
+    $(document).ready(function(){
+          $('table').wrap('<div class="table-wrapper"></div>');
+    });
+  </script>
+
+  <script src="../../../js/mike.js"></script>
+
+  
+    <script src="../../../js/mathjax.js"></script>
+  
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <script src="../../../search/main.js"></script>
+  
+
+</head>
+
+<body>
+  <header class="header">
+    <ul>
+      <li id="logo">
+        <a href="../../..">T<span>IPS</span></a>
+      </li>
+      
+      
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+      
+      
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+      
+      
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+      
+      <li class="tools">
+        
+          <a id="nav-toggle" class="tool" onclick="nav_toggle()">
+        
+          <svg><use xlink:href="../../../svg/sprite.svg#menu-2"></use></svg>
+        </a>
+        <script>
+           function nav_toggle() {
+               var bar = document.getElementById("tab-bar");
+               if (bar.style.display === "none") {
+                   bar.style.display = "block";
+               } else {
+                   bar.style.display = "none";
+               }
+           }
+          function nav_reset() {
+              var bar = document.getElementById("tab-bar");
+              if (window.innerWidth>950){
+                  bar.style.display = "block";
+              } else {
+                  bar.style.display = "none";
+              }
+          }
+          window.onresize = nav_reset;
+        </script>
+        
+        
+        <a class="tool" href="https://github.com/teoroo-cmc/tips/">
+          <svg><use xlink:href="../../../svg/sprite.svg#brand-github"></use></svg>
+          <span>teoroo-cmc/tips</span>
+        </a>
+        
+      </li>
+    </ul>
+  </header>
+
+
+  <div id="main">
+    <div id="tab-bar">
+      <ul>
+      
+       
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+                 
+                   
+    <li >
+      <a href="../../bias/" class="">
+        tips.bias
+      </a>
+    </li>
+
+                 
+                   
+  <a class="nav-title" > tips.io </a>
+  
+    
+    <li >
+      <a href="../generic/" class="">
+        generic
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../ase/" class="">
+        ase
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../cp2k/" class="">
+        cp2k
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../lammps/" class="">
+        lammps
+      </a>
+    </li>
+
+  
+    
+    <li class="active">
+      <a href="./" class="">
+        runner
+      </a>
+    </li>
+
+  
+
+                 
+               
+             </ul>
+           </div>
+         
+      
+      </ul>
+    </div>
+
+    <div id="content">
+      <h1 id="tipsiorunner">tips.io.runner</h1>
+<p>The runner file format is a format used by the RuNNer and the N2P2 code, which
+uses atomic units.</p>
+<details>
+<summary>Source code</summary>
+<div class="highlight"><pre><span></span><code><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;A RuNNer data loader</span>
+
+<span class="sd">RuNNer data has the format</span>
+
+<span class="sd">begin</span>
+<span class="sd">lattice float float float</span>
+<span class="sd">lattice float float float</span>
+<span class="sd">lattice float float float</span>
+<span class="sd">atom floatcoordx floatcoordy floatcoordz int_atom_symbol floatq 0  floatforcex floatforcey floatforcez</span>
+<span class="sd">atom 1           2           3           4               5      6  7           8           9</span>
+<span class="sd">energy float</span>
+<span class="sd">charge float</span>
+<span class="sd">comment arbitrary string</span>
+<span class="sd">end</span>
+
+<span class="sd">The order of the lines within the begin/end block are arbitrary. Coordinates,</span>
+<span class="sd">charges, energies and forces are all in atomic units.</span>
+
+<span class="sd">Originally written by: Matti Hellström</span>
+<span class="sd">Adapted by: Yunqi Shao [yunqi.shao@kemi.uu.se]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">ds2runner</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">ase.units</span> <span class="kn">import</span> <span class="n">Bohr</span><span class="p">,</span> <span class="n">Hartree</span>
+    <span class="kn">from</span> <span class="nn">ase.data</span> <span class="kn">import</span> <span class="n">chemical_symbols</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+        <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;begin</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;comment runner dataset generated by TIPS</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">bohr2ang</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lattice </span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;stress&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;stress&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">bohr2ang</span><span class="o">**</span><span class="mi">3</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stress  </span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;elem&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;coord&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">Bohr</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;force&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">Hartree</span> <span class="o">*</span> <span class="n">Bohr</span>
+        <span class="p">):</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;atom     </span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2">  &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">chemical_symbols</span><span class="p">[</span><span class="n">e</span><span class="p">]</span><span class="si">}</span><span class="s2">  &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;0.0    0.0   </span><span class="si">{</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">14.6e</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;energy  </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">Hartree</span><span class="si">:</span><span class="s1">14.6e</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;charge 0.0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;end</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</code></pre></div>
+</details>
+    </div>
+
+  </div>
+
+  <div class="page">
+    <div class="page-prev">
+      
+      <a href="../lammps/" title="lammps"><span>«</span> Previous</a>
+      
+    </div>
+    <div class="page-next">
+      
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with <a href="https://www.mkdocs.org">mkdocs</a> and the <a href="https://github.com/yqshao/mkdocs-flux-theme">flux</a> theme.
+  </div>
+</body>
+</html>

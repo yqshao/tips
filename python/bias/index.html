@@ -1,0 +1,397 @@
+<!--
+  This Basic theme serves as an example for how to create other
+  themes by demonstrating the features with minimal HTML and CSS.
+  Comments like this will be through the code to explain briefly
+  what each feature is and point you to the MkDocs documentation
+  to find out more.
+-->
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>tips.bias - TIPS</title>
+
+  <link rel="stylesheet" href="../../css/theme.css">
+  <link rel="stylesheet" href="../../css/pygments.css">
+  <link rel="icon" href="data:,">
+  
+    <link href="../../assets/_mkdocstrings.css" rel="stylesheet">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;1,400;1,700&family=Noto+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+
+  <script>
+    var base_url = "../..";
+    $(document).ready(function(){
+          $('table').wrap('<div class="table-wrapper"></div>');
+    });
+  </script>
+
+  <script src="../../js/mike.js"></script>
+
+  
+    <script src="../../js/mathjax.js"></script>
+  
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <script src="../../search/main.js"></script>
+  
+
+</head>
+
+<body>
+  <header class="header">
+    <ul>
+      <li id="logo">
+        <a href="../..">T<span>IPS</span></a>
+      </li>
+      
+      
+  <li  class="tab" >
+    <a href="../.." class="">
+      Home
+    </a>
+  </li>
+
+      
+      
+  
+  <li  class="tab" >
+    <a href="../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+      
+      
+  
+  <li class="active tab" >
+    <a href="./">
+      Python
+    </a>
+  </li>
+
+      
+      <li class="tools">
+        
+          <a id="nav-toggle" class="tool" onclick="nav_toggle()">
+        
+          <svg><use xlink:href="../../svg/sprite.svg#menu-2"></use></svg>
+        </a>
+        <script>
+           function nav_toggle() {
+               var bar = document.getElementById("tab-bar");
+               if (bar.style.display === "none") {
+                   bar.style.display = "block";
+               } else {
+                   bar.style.display = "none";
+               }
+           }
+          function nav_reset() {
+              var bar = document.getElementById("tab-bar");
+              if (window.innerWidth>950){
+                  bar.style.display = "block";
+              } else {
+                  bar.style.display = "none";
+              }
+          }
+          window.onresize = nav_reset;
+        </script>
+        
+        
+        <a class="tool" href="https://github.com/teoroo-cmc/tips/">
+          <svg><use xlink:href="../../svg/sprite.svg#brand-github"></use></svg>
+          <span>teoroo-cmc/tips</span>
+        </a>
+        
+      </li>
+    </ul>
+  </header>
+
+
+  <div id="main">
+    <div id="tab-bar">
+      <ul>
+      
+       
+  <li  class="tab" >
+    <a href="../.." class="">
+      Home
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li  class="tab" >
+    <a href="../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li class="active tab" >
+    <a href="./">
+      Python
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+                 
+                   
+    <li class="active">
+      <a href="./" class="">
+        tips.bias
+      </a>
+    </li>
+
+                 
+                   
+  <a class="nav-title" > tips.io </a>
+  
+    
+    <li >
+      <a href="../io/generic/" class="">
+        generic
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../io/ase/" class="">
+        ase
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../io/cp2k/" class="">
+        cp2k
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../io/lammps/" class="">
+        lammps
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../io/runner/" class="">
+        runner
+      </a>
+    </li>
+
+  
+
+                 
+               
+             </ul>
+           </div>
+         
+      
+      </ul>
+    </div>
+
+    <div id="content">
+      <h1 id="biased-sampling-methods">Biased Sampling Methods</h1>
+<p>The <code>tips.bias</code> module implements an ensemble-based sampling methods that
+applies a biasing potential.</p>
+<h2 id="usage">Usage</h2>
+<p>The <code>EnsembleBiasedCalculator</code> is implemented as an ASE calculator and can be
+used like any other calculators in ASE to run, e.g., MD simulations. The
+calculator computes several other properties, named as:</p>
+<ul>
+<li><code>*_bias</code>: the biasing potential or the corresponding force</li>
+<li><code>*_avg</code>: the average potential or forces</li>
+<li><code>*_std</code>: the standard deviation in energy or force components</li>
+</ul>
+<p>In the example below, we used a biasing potential to prevent the potential from
+sampling areas with a high disagreement. those bias forces and energies can
+be accessed as atom properties.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pinn</span>
+<span class="kn">from</span> <span class="nn">ase.io</span> <span class="kn">import</span> <span class="n">read</span>
+<span class="kn">from</span> <span class="nn">tips.bias</span> <span class="kn">import</span> <span class="n">EnsembleBiasedCalculator</span>
+<span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;examples/ensemble/pinet-</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">/model&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="n">calcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">pinn</span><span class="o">.</span><span class="n">get_calc</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">]</span>
+<span class="n">calc</span> <span class="o">=</span> <span class="n">EnsembleBiasedCalculator</span><span class="p">(</span><span class="n">calcs</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="s1">&#39;heaviside&#39;</span><span class="p">,</span> <span class="n">kb</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">atoms</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s2">&quot;examples/ensemble/water.xyz&quot;</span><span class="p">)</span>
+<span class="n">atoms</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="s1">&#39;forces_bias&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="heaviside-biasing">Heaviside biasing</h2>
+<p>The <code>'heaviside'</code> bias used above applies a potential defined in by Schran et
+al. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<div class="arithmatex">\[\begin{align}
+E^{(b)} &amp;=
+\theta(\sigma_E -\sigma_0) \frac{1}{2} k^{b} (\sigma_E -\sigma_0)^2 \\
+-\nabla_\alpha E^{(b)} &amp;=
+\theta(\sigma_E -\sigma_0) k^{b} \frac{\sigma_E -\sigma_0}{\sigma_E} \cdot
+\frac{1}{n}\sum_{i=1}^{n} - \Delta E_i \nabla_\alpha \Delta E_i
+\end{align}\]</div>
+<p>where <span class="arithmatex">\(E^{(b)}\)</span> is the biasing potential,
+<span class="arithmatex">\(\nabla_\alpha E^{(b)}\)</span> is the corresponding biasing force;
+<span class="arithmatex">\(\sigma_E\)</span> and <span class="arithmatex">\(\Delta E_i\)</span> are the standard deviation and individual disagreement
+in total energy predictions, defined as:</p>
+<div class="arithmatex">\[\begin{align}
+\sigma_E &amp;= \left[\frac{1}{n} \sum_{i=1}^n (\Delta E_i)^2 \right]^{1/2} \\
+\Delta E_i &amp;= E - E_i
+\end{align}\]</div>
+<details>
+<summary>Source code</summary>
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="o">-*-</span><span class="w"> </span><span class="nl">coding:</span><span class="w"> </span><span class="n">utf</span><span class="o">-</span><span class="mi">8</span><span class="w"> </span><span class="o">-*-</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">np</span>
+<span class="n">from</span><span class="w"> </span><span class="n">ase</span><span class="o">.</span><span class="na">calculators</span><span class="o">.</span><span class="na">calculator</span><span class="w"> </span><span class="kn">import</span><span class="w"> </span><span class="nn">Calculator</span>
+
+
+<span class="kd">class</span><span class="w"> </span><span class="nf">EnsembleBiasedCalculator</span><span class="o">(</span><span class="n">Calculator</span><span class="o">):</span>
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;This is an implementation of ensemble calculator which</span>
+<span class="s2">    combines multiple calcualtors and optionally baising the potential</span>
+<span class="s2">    according the disagreement.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+<span class="w">    </span><span class="kt">def</span><span class="w"> </span><span class="nf">__init__</span><span class="o">(</span><span class="n">self</span><span class="o">,</span><span class="w"> </span><span class="n">calcs</span><span class="o">,</span><span class="w"> </span><span class="n">bias</span><span class="o">=</span><span class="n">None</span><span class="o">,</span><span class="w"> </span><span class="n">kb</span><span class="o">=</span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="n">sigma0</span><span class="o">=</span><span class="mi">0</span><span class="o">):</span>
+<span class="w">        </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Args:</span>
+<span class="s2">            calcs: List of `ase.calcualtors`</span>
+<span class="s2">            bias: None or &#39;heaviside&#39;, see the documentatin for details.</span>
+<span class="s2">            kb: harmonic form factor in heaviside-style biasing</span>
+<span class="s2">            sigma0: tolerance in heaviside-style biasing</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="kd">super</span><span class="o">().</span><span class="na">__init__</span><span class="o">()</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">len</span><span class="o">(</span><span class="n">calcs</span><span class="o">)</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">calcs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calcs</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">orig_properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;energy&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;forces&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;stress&quot;</span><span class="o">]</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">implemented_properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>
+<span class="w">            </span><span class="s2">&quot;energy&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;energy_std&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;energy_avg&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;energy_bias&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;forces&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;forces_std&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;forces_avg&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;forces_bias&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;stress&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;stress_std&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;stress_avg&quot;</span><span class="o">,</span>
+<span class="w">            </span><span class="s2">&quot;stress_bias&quot;</span><span class="o">,</span>
+<span class="w">        </span><span class="o">]</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">bias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bias</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">kb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kb</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">sigma0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigma0</span>
+
+<span class="w">    </span><span class="kt">def</span><span class="w"> </span><span class="nf">get_orig_properties</span><span class="o">(</span><span class="n">self</span><span class="o">,</span><span class="w"> </span><span class="n">properties</span><span class="o">,</span><span class="w"> </span><span class="n">atoms</span><span class="o">):</span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{}</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">prop</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">orig_properties</span><span class="o">:</span>
+<span class="w">            </span><span class="n">contrib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">calc</span><span class="o">.</span><span class="na">get_property</span><span class="o">(</span><span class="n">prop</span><span class="o">,</span><span class="w"> </span><span class="n">atoms</span><span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">calc</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">calcs</span><span class="o">]</span>
+<span class="w">            </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_avg&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="na">mean</span><span class="o">(</span><span class="n">contrib</span><span class="o">,</span><span class="w"> </span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="o">)</span>
+<span class="w">            </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_std&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="na">std</span><span class="o">(</span><span class="n">contrib</span><span class="o">,</span><span class="w"> </span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="o">)</span>
+<span class="w">            </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_all&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">contrib</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">results</span>
+
+<span class="w">    </span><span class="kt">def</span><span class="w"> </span><span class="nf">get_properties</span><span class="o">(</span><span class="n">self</span><span class="o">,</span><span class="w"> </span><span class="n">properties</span><span class="o">,</span><span class="w"> </span><span class="n">atoms</span><span class="o">):</span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">get_orig_properties</span><span class="o">(</span><span class="n">properties</span><span class="o">,</span><span class="w"> </span><span class="n">atoms</span><span class="o">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">bias</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="nl">None:</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">prop</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">orig_properties</span><span class="o">:</span>
+<span class="w">                </span><span class="n">results</span><span class="o">[</span><span class="n">prop</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_avg&quot;</span><span class="o">]</span>
+<span class="w">                </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_bias&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="na">zeros_like</span><span class="o">(</span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_avg&quot;</span><span class="o">])</span>
+<span class="w">        </span><span class="n">elif</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">bias</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;heaviside&quot;</span><span class="o">:</span>
+<span class="w">            </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">n</span>
+<span class="w">            </span><span class="n">kb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">kb</span>
+<span class="w">            </span><span class="n">sigma0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">sigma0</span>
+<span class="w">            </span><span class="n">sigmaE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">[</span><span class="s2">&quot;energy_std&quot;</span><span class="o">]</span>
+<span class="w">            </span><span class="n">theta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="na">heaviside</span><span class="o">(</span><span class="n">sigmaE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sigma0</span><span class="o">,</span><span class="w"> </span><span class="mf">0.5</span><span class="o">)</span>
+<span class="w">            </span><span class="n">DeltaE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">[</span><span class="s2">&quot;energy_avg&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">results</span><span class="o">[</span><span class="s2">&quot;energy_all&quot;</span><span class="o">]</span>
+<span class="w">            </span><span class="n">results</span><span class="o">[</span><span class="s2">&quot;energy_bias&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">theta</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">kb</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">(</span><span class="n">sigmaE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sigma0</span><span class="o">)</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="w">            </span><span class="n">prefac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">theta</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">kb</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">(</span><span class="n">sigmaE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">sigma0</span><span class="o">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">n</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">prop</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;forces&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;stress&quot;</span><span class="o">]:</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">direvarive</span><span class="w"> </span><span class="n">properties</span>
+<span class="w">                </span><span class="n">DeltaP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_avg&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">P</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">P</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_all&quot;</span><span class="o">]]</span>
+<span class="w">                </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_bias&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prefac</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">sum</span><span class="o">(</span>
+<span class="w">                    </span><span class="n">DE</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">DP</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">DE</span><span class="o">,</span><span class="w"> </span><span class="n">DP</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">zip</span><span class="o">(</span><span class="n">DeltaE</span><span class="o">,</span><span class="w"> </span><span class="n">DeltaP</span><span class="o">)</span>
+<span class="w">                </span><span class="o">)</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="n">prop</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">orig_properties</span><span class="o">:</span>
+<span class="w">                </span><span class="n">results</span><span class="o">[</span><span class="n">prop</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_avg&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">results</span><span class="o">[</span><span class="n">f</span><span class="s2">&quot;{prop}_bias&quot;</span><span class="o">]</span>
+<span class="w">        </span><span class="k">else</span><span class="o">:</span>
+<span class="w">            </span><span class="n">raise</span><span class="w"> </span><span class="n">ValueError</span><span class="o">(</span><span class="n">f</span><span class="s2">&quot;Unknown biasing method: {self.bias}&quot;</span><span class="o">)</span>
+
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">results</span>
+
+<span class="w">    </span><span class="kt">def</span><span class="w"> </span><span class="nf">calculate</span><span class="o">(</span><span class="n">self</span><span class="o">,</span><span class="w"> </span><span class="n">atoms</span><span class="o">,</span><span class="w"> </span><span class="n">properties</span><span class="o">,</span><span class="w"> </span><span class="n">system_changes</span><span class="o">):</span>
+<span class="w">        </span><span class="s2">&quot;&quot;&quot;Calculates all the specific property for each calculator and</span>
+<span class="s2">        returns with the summed value.</span>
+
+<span class="s2">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">atoms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">atoms</span><span class="o">.</span><span class="na">copy</span><span class="o">()</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">caching</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">results</span>
+<span class="w">        </span><span class="n">self</span><span class="o">.</span><span class="na">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">self</span><span class="o">.</span><span class="na">get_properties</span><span class="o">(</span><span class="n">properties</span><span class="o">,</span><span class="w"> </span><span class="n">atoms</span><span class="o">)</span>
+</code></pre></div>
+</details>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><sup>1</sup> C. Schran, K. Brezina, and O. Marsalek, “<a href="https://doi.org/10.1063/5.0016004">Committee neural network potentials control generalization errors and enable active learning</a>,” J. Chem. Phys. <strong>153</strong>(10), 104105 (2020).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+    </div>
+
+  </div>
+
+  <div class="page">
+    <div class="page-prev">
+      
+      <a href="../../cli/utils/" title="utils"><span>«</span> Previous</a>
+      
+    </div>
+    <div class="page-next">
+      
+      <a href="../io/generic/" title="generic" />Next <span>»</span></a>
+      
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with <a href="https://www.mkdocs.org">mkdocs</a> and the <a href="https://github.com/yqshao/mkdocs-flux-theme">flux</a> theme.
+  </div>
+</body>
+</html>

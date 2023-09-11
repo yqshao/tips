@@ -1,0 +1,477 @@
+<!--
+  This Basic theme serves as an example for how to create other
+  themes by demonstrating the features with minimal HTML and CSS.
+  Comments like this will be through the code to explain briefly
+  what each feature is and point you to the MkDocs documentation
+  to find out more.
+-->
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>ase - TIPS</title>
+
+  <link rel="stylesheet" href="../../../css/theme.css">
+  <link rel="stylesheet" href="../../../css/pygments.css">
+  <link rel="icon" href="data:,">
+  
+    <link href="../../../assets/_mkdocstrings.css" rel="stylesheet">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;1,400;1,700&family=Noto+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+
+  <script>
+    var base_url = "../../..";
+    $(document).ready(function(){
+          $('table').wrap('<div class="table-wrapper"></div>');
+    });
+  </script>
+
+  <script src="../../../js/mike.js"></script>
+
+  
+    <script src="../../../js/mathjax.js"></script>
+  
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <script src="../../../search/main.js"></script>
+  
+
+</head>
+
+<body>
+  <header class="header">
+    <ul>
+      <li id="logo">
+        <a href="../../..">T<span>IPS</span></a>
+      </li>
+      
+      
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+      
+      
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+      
+      
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+      
+      <li class="tools">
+        
+          <a id="nav-toggle" class="tool" onclick="nav_toggle()">
+        
+          <svg><use xlink:href="../../../svg/sprite.svg#menu-2"></use></svg>
+        </a>
+        <script>
+           function nav_toggle() {
+               var bar = document.getElementById("tab-bar");
+               if (bar.style.display === "none") {
+                   bar.style.display = "block";
+               } else {
+                   bar.style.display = "none";
+               }
+           }
+          function nav_reset() {
+              var bar = document.getElementById("tab-bar");
+              if (window.innerWidth>950){
+                  bar.style.display = "block";
+              } else {
+                  bar.style.display = "none";
+              }
+          }
+          window.onresize = nav_reset;
+        </script>
+        
+        
+        <a class="tool" href="https://github.com/teoroo-cmc/tips/">
+          <svg><use xlink:href="../../../svg/sprite.svg#brand-github"></use></svg>
+          <span>teoroo-cmc/tips</span>
+        </a>
+        
+      </li>
+    </ul>
+  </header>
+
+
+  <div id="main">
+    <div id="tab-bar">
+      <ul>
+      
+       
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+                 
+                   
+    <li >
+      <a href="../../bias/" class="">
+        tips.bias
+      </a>
+    </li>
+
+                 
+                   
+  <a class="nav-title" > tips.io </a>
+  
+    
+    <li >
+      <a href="../generic/" class="">
+        generic
+      </a>
+    </li>
+
+  
+    
+    <li class="active">
+      <a href="./" class="">
+        ase
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../cp2k/" class="">
+        cp2k
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../lammps/" class="">
+        lammps
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../runner/" class="">
+        runner
+      </a>
+    </li>
+
+  
+
+                 
+               
+             </ul>
+           </div>
+         
+      
+      </ul>
+    </div>
+
+    <div id="content">
+      <h1 id="ase-format">ASE Format</h1>
+<p>The <code>tips.io.ase</code> module allows the loading of ase-supported trajectories from
+the TIPS Dataset.</p>
+<p>Writer for <code>asetraj</code> and <code>extxyz</code> extends the original ASE file writers, and
+adds additional columns such as <code>force_std</code> which one might obtain in an
+ensemble-based MD simulation.</p>
+<details>
+<summary>Source code</summary>
+<div class="highlight"><pre><span></span><code><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;Data Loader for ASE Trajectory Objects and .traj files</span>
+
+<span class="sd">The readers and writers are patched from the original ASE implementation such</span>
+<span class="sd">that extra atomic and structrural featurse can be written.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="kn">import</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">tips.io.utils</span> <span class="kn">import</span> <span class="n">list_loader</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.calculator</span> <span class="kn">import</span> <span class="n">all_properties</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;tips&quot;</span><span class="p">)</span>
+
+<span class="c1"># patches for ASE IO modules</span>
+<span class="n">extra_properties</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="s2">&quot;stress&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">]</span>
+<span class="p">]</span>
+<span class="n">per_atom_properties</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prop</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;_avg&quot;</span><span class="p">,</span> <span class="s2">&quot;_std&quot;</span><span class="p">,</span> <span class="s2">&quot;_bias&quot;</span><span class="p">]</span>
+<span class="p">]</span>
+<span class="n">per_config_properties</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prop</span><span class="si">}{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;stress&quot;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;_avg&quot;</span><span class="p">,</span> <span class="s2">&quot;_std&quot;</span><span class="p">,</span> <span class="s2">&quot;_bias&quot;</span><span class="p">]</span>
+<span class="p">]</span>
+<span class="n">all_prop_patch</span> <span class="o">=</span> <span class="n">patch</span><span class="p">(</span>
+    <span class="s2">&quot;ase.calculators.calculator.all_properties&quot;</span><span class="p">,</span> <span class="n">all_properties</span> <span class="o">+</span> <span class="n">extra_properties</span>
+<span class="p">)</span>
+<span class="n">atom_prop_patch</span> <span class="o">=</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;ase.io.extxyz.per_atom_properties&quot;</span><span class="p">,</span> <span class="n">per_atom_properties</span><span class="p">)</span>
+<span class="n">struc_prop_patch</span> <span class="o">=</span> <span class="n">patch</span><span class="p">(</span><span class="s2">&quot;ase.io.extxyz.per_config_properties&quot;</span><span class="p">,</span> <span class="n">per_config_properties</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_tips2ase</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;naming translator form tips to ase&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;force&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;force&quot;</span><span class="p">,</span> <span class="s2">&quot;forces&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">k</span>
+
+
+<span class="k">def</span> <span class="nf">_ase2tips</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;naming translator form tips to ase&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;forces&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">k</span>
+
+
+<span class="k">def</span> <span class="nf">load_ase</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">skim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atomic</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;force&quot;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loading Dataset from a ASE trajectory</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        traj: a trajectory object (list of atoms)</span>
+<span class="sd">        skim: skim the trajectory to get the element information</span>
+<span class="sd">        atomic: list of keys to match the atomic features</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        A TIPS Dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tips.io.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;elem&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pbc</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>  <span class="c1"># only adds cell for periodic systemcs</span>
+        <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">}</span>
+
+    <span class="n">k_atomic</span><span class="p">,</span> <span class="n">k_structural</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">calc</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># first check the dtype with numpy</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;int&quot;</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping unrecognizable result </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="c1"># then determine the shape</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">([(</span><span class="n">ka</span> <span class="ow">in</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">ka</span> <span class="ow">in</span> <span class="n">atomic</span><span class="p">]):</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">v</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]]</span>
+            <span class="n">k_atomic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="n">k_structural</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">spec</span><span class="p">[</span><span class="n">_ase2tips</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">k_atomic</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inferring atomic features: </span><span class="si">{</span><span class="n">k_atomic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k_structural</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inferring structural features: </span><span class="si">{</span><span class="n">k_structural</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;ASE Dataset&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="s2">&quot;spec&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">indexer</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">traj</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">datum</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;elem&quot;</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">numbers</span><span class="p">,</span>
+            <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="s2">&quot;cell&quot;</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;spec&quot;</span><span class="p">]:</span>
+            <span class="n">datum</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">[:]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;spec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">,</span> <span class="s2">&quot;elem&quot;</span><span class="p">,</span> <span class="s2">&quot;coord&quot;</span><span class="p">]:</span>
+                <span class="k">continue</span>  <span class="c1"># hard-coded features</span>
+            <span class="n">datum</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">_tips2ase</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">datum</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">,</span> <span class="n">indexer</span><span class="o">=</span><span class="n">indexer</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">skim</span><span class="p">:</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">skim</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ds</span>
+
+
+<span class="nd">@list_loader</span>
+<span class="k">def</span> <span class="nf">load_asetraj</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loading Dataset from a ASE trajectory</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname: a trajectory file</span>
+<span class="sd">        index: indices of the trajectory to load</span>
+<span class="sd">        **kwargs: arguments applicable to load_ase</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        a TIPS Dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+
+    <span class="k">with</span> <span class="n">all_prop_patch</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">ase.io</span> <span class="kn">import</span> <span class="n">read</span>
+
+        <span class="n">traj</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">Atoms</span><span class="p">):</span>
+            <span class="n">traj</span> <span class="o">=</span> <span class="p">[</span><span class="n">traj</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">load_ase</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">ds2ase</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+    <span class="kn">from</span> <span class="nn">ase.calculators.singlepoint</span> <span class="kn">import</span> <span class="n">SinglePointCalculator</span>
+
+    <span class="n">traj</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="n">datum</span><span class="p">[</span><span class="s2">&quot;elem&quot;</span><span class="p">],</span> <span class="n">positions</span><span class="o">=</span><span class="n">datum</span><span class="p">[</span><span class="s2">&quot;coord&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;cell&quot;</span> <span class="ow">in</span> <span class="n">datum</span><span class="p">:</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">datum</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">pbc</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">_tips2ase</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">datum</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;elem&quot;</span><span class="p">,</span> <span class="s2">&quot;coord&quot;</span><span class="p">,</span> <span class="s2">&quot;cell&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">calc</span> <span class="o">=</span> <span class="n">SinglePointCalculator</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="o">**</span><span class="n">results</span><span class="p">)</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">calc</span>
+        <span class="n">traj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">traj</span>
+
+
+<span class="k">def</span> <span class="nf">ds2asetraj</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes a dataset to an ASE trajectory file, with extra columns</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset: a TIPS Datset object</span>
+<span class="sd">        fname: output file name (&#39;.traj&#39; will be appended if not alreay there)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">ase.calculators.calculator</span> <span class="kn">import</span> <span class="n">all_properties</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.traj&quot;</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">+=</span> <span class="s2">&quot;.traj&quot;</span>
+    <span class="n">extra_properties</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="s2">&quot;stress&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">ds2ase</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">all_prop_patch</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">ase.io</span> <span class="kn">import</span> <span class="n">write</span>
+
+        <span class="n">write</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">traj</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">ds2extxyz</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes a dataset to an extended-xyz file, with extra columns</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset: a TIPS Datset object</span>
+<span class="sd">        fname: output file name (&#39;.xyz&#39; will be appended if not alreay there)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.xyz&quot;</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">+=</span> <span class="s2">&quot;.xyz&quot;</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">ds2ase</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">atoms</span> <span class="ow">in</span> <span class="n">traj</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span><span class="o">.</span><span class="n">results</span>
+        <span class="k">if</span> <span class="s2">&quot;stress&quot;</span> <span class="ow">in</span> <span class="n">results</span> <span class="ow">and</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;stress&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;stress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;stress&quot;</span><span class="p">][</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="p">]</span>
+    <span class="k">with</span> <span class="n">all_prop_patch</span><span class="p">,</span> <span class="n">atom_prop_patch</span><span class="p">,</span> <span class="n">struc_prop_patch</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">ase.io</span> <span class="kn">import</span> <span class="n">write</span>
+
+        <span class="n">write</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">traj</span><span class="p">)</span>
+</code></pre></div>
+</details>
+    </div>
+
+  </div>
+
+  <div class="page">
+    <div class="page-prev">
+      
+      <a href="../generic/" title="generic"><span>«</span> Previous</a>
+      
+    </div>
+    <div class="page-next">
+      
+      <a href="../cp2k/" title="cp2k" />Next <span>»</span></a>
+      
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with <a href="https://www.mkdocs.org">mkdocs</a> and the <a href="https://github.com/yqshao/mkdocs-flux-theme">flux</a> theme.
+  </div>
+</body>
+</html>

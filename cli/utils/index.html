@@ -1,0 +1,290 @@
+<!--
+  This Basic theme serves as an example for how to create other
+  themes by demonstrating the features with minimal HTML and CSS.
+  Comments like this will be through the code to explain briefly
+  what each feature is and point you to the MkDocs documentation
+  to find out more.
+-->
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>utils - TIPS</title>
+
+  <link rel="stylesheet" href="../../css/theme.css">
+  <link rel="stylesheet" href="../../css/pygments.css">
+  <link rel="icon" href="data:,">
+  
+    <link href="../../assets/_mkdocstrings.css" rel="stylesheet">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;1,400;1,700&family=Noto+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+
+  <script>
+    var base_url = "../..";
+    $(document).ready(function(){
+          $('table').wrap('<div class="table-wrapper"></div>');
+    });
+  </script>
+
+  <script src="../../js/mike.js"></script>
+
+  
+    <script src="../../js/mathjax.js"></script>
+  
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <script src="../../search/main.js"></script>
+  
+
+</head>
+
+<body>
+  <header class="header">
+    <ul>
+      <li id="logo">
+        <a href="../..">T<span>IPS</span></a>
+      </li>
+      
+      
+  <li  class="tab" >
+    <a href="../.." class="">
+      Home
+    </a>
+  </li>
+
+      
+      
+  
+  <li class="active tab" >
+    <a href="../convert/">
+      CLI
+    </a>
+  </li>
+
+      
+      
+  
+  <li  class="tab" >
+    <a href="../../python/bias/">
+      Python
+    </a>
+  </li>
+
+      
+      <li class="tools">
+        
+          <a id="nav-toggle" class="tool" onclick="nav_toggle()">
+        
+          <svg><use xlink:href="../../svg/sprite.svg#menu-2"></use></svg>
+        </a>
+        <script>
+           function nav_toggle() {
+               var bar = document.getElementById("tab-bar");
+               if (bar.style.display === "none") {
+                   bar.style.display = "block";
+               } else {
+                   bar.style.display = "none";
+               }
+           }
+          function nav_reset() {
+              var bar = document.getElementById("tab-bar");
+              if (window.innerWidth>950){
+                  bar.style.display = "block";
+              } else {
+                  bar.style.display = "none";
+              }
+          }
+          window.onresize = nav_reset;
+        </script>
+        
+        
+        <a class="tool" href="https://github.com/teoroo-cmc/tips/">
+          <svg><use xlink:href="../../svg/sprite.svg#brand-github"></use></svg>
+          <span>teoroo-cmc/tips</span>
+        </a>
+        
+      </li>
+    </ul>
+  </header>
+
+
+  <div id="main">
+    <div id="tab-bar">
+      <ul>
+      
+       
+  <li  class="tab" >
+    <a href="../.." class="">
+      Home
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li class="active tab" >
+    <a href="../convert/">
+      CLI
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+                 
+                   
+    <li >
+      <a href="../convert/" class="">
+        convert
+      </a>
+    </li>
+
+                 
+                   
+    <li >
+      <a href="../subsample/" class="">
+        subsample
+      </a>
+    </li>
+
+                 
+                   
+    <li class="active">
+      <a href="./" class="">
+        utils
+      </a>
+    </li>
+
+                 
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li  class="tab" >
+    <a href="../../python/bias/">
+      Python
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+      </ul>
+    </div>
+
+    <div id="content">
+      <h1 id="tips-utils">tips utils</h1>
+<p>This commnad collects several tools useful in preparing simulation input files.</p>
+<h2 id="mkcp2kinp">mkcp2kinp</h2>
+<p>This command takes a CP2K <code>inp</code> file and inserts the structural data to it. It
+supprts single-shot mode, where one output <code>cp2k.inp</code> will be made; and a
+subsample mode, where subsampled dataset will be used to generate several input
+files.</p>
+<h3 id="usage">Usage</h3>
+<div class="highlight"><pre><span></span><code>tips<span class="w"> </span>utils<span class="w"> </span>mkcp2kinp<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>inp<span class="w"> </span>dataset
+</code></pre></div>
+<h3 id="options">Options</h3>
+<table>
+<thead>
+<tr>
+<th>Option [shorthand]</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--fmt [-f]</code></td>
+<td><code>'auto'</code></td>
+<td>format of input dataset</td>
+</tr>
+<tr>
+<td><code>--emap [-em]</code></td>
+<td><code>None</code></td>
+<td>map the elements according to a LAMMPS data file</td>
+</tr>
+<tr>
+<td><code>--idx</code></td>
+<td><code>-1</code></td>
+<td>index of the used datum, used in single-shot mode</td>
+</tr>
+<tr>
+<td><code>--subsample</code></td>
+<td><code>False</code></td>
+<td>activates the subsample mode</td>
+</tr>
+<tr>
+<td><code>--strategy</code></td>
+<td><code>'uniform'</code></td>
+<td>one of 'uniform' or 'sorted'</td>
+</tr>
+<tr>
+<td><code>--nsample</code></td>
+<td><code>None</code></td>
+<td>number to subsample</td>
+</tr>
+<tr>
+<td><code>--psample</code></td>
+<td><code>None</code></td>
+<td>percentage to subsample</td>
+</tr>
+<tr>
+<td><code>--sort-Key</code></td>
+<td><code>'force_std'</code></td>
+<td>key used in the sorted scheme</td>
+</tr>
+</tbody>
+</table>
+    </div>
+
+  </div>
+
+  <div class="page">
+    <div class="page-prev">
+      
+      <a href="../subsample/" title="subsample"><span>«</span> Previous</a>
+      
+    </div>
+    <div class="page-next">
+      
+      <a href="../../python/bias/" title="tips.bias" />Next <span>»</span></a>
+      
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with <a href="https://www.mkdocs.org">mkdocs</a> and the <a href="https://github.com/yqshao/mkdocs-flux-theme">flux</a> theme.
+  </div>
+</body>
+</html>

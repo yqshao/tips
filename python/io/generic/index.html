@@ -1,0 +1,1018 @@
+<!--
+  This Basic theme serves as an example for how to create other
+  themes by demonstrating the features with minimal HTML and CSS.
+  Comments like this will be through the code to explain briefly
+  what each feature is and point you to the MkDocs documentation
+  to find out more.
+-->
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>generic - TIPS</title>
+
+  <link rel="stylesheet" href="../../../css/theme.css">
+  <link rel="stylesheet" href="../../../css/pygments.css">
+  <link rel="icon" href="data:,">
+  
+    <link href="../../../assets/_mkdocstrings.css" rel="stylesheet">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;1,400;1,700&family=Noto+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+
+  <script>
+    var base_url = "../../..";
+    $(document).ready(function(){
+          $('table').wrap('<div class="table-wrapper"></div>');
+    });
+  </script>
+
+  <script src="../../../js/mike.js"></script>
+
+  
+    <script src="../../../js/mathjax.js"></script>
+  
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <script src="../../../search/main.js"></script>
+  
+
+</head>
+
+<body>
+  <header class="header">
+    <ul>
+      <li id="logo">
+        <a href="../../..">T<span>IPS</span></a>
+      </li>
+      
+      
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+      
+      
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+      
+      
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+      
+      <li class="tools">
+        
+          <a id="nav-toggle" class="tool" onclick="nav_toggle()">
+        
+          <svg><use xlink:href="../../../svg/sprite.svg#menu-2"></use></svg>
+        </a>
+        <script>
+           function nav_toggle() {
+               var bar = document.getElementById("tab-bar");
+               if (bar.style.display === "none") {
+                   bar.style.display = "block";
+               } else {
+                   bar.style.display = "none";
+               }
+           }
+          function nav_reset() {
+              var bar = document.getElementById("tab-bar");
+              if (window.innerWidth>950){
+                  bar.style.display = "block";
+              } else {
+                  bar.style.display = "none";
+              }
+          }
+          window.onresize = nav_reset;
+        </script>
+        
+        
+        <a class="tool" href="https://github.com/teoroo-cmc/tips/">
+          <svg><use xlink:href="../../../svg/sprite.svg#brand-github"></use></svg>
+          <span>teoroo-cmc/tips</span>
+        </a>
+        
+      </li>
+    </ul>
+  </header>
+
+
+  <div id="main">
+    <div id="tab-bar">
+      <ul>
+      
+       
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+                 
+                   
+    <li >
+      <a href="../../bias/" class="">
+        tips.bias
+      </a>
+    </li>
+
+                 
+                   
+  <a class="nav-title" > tips.io </a>
+  
+    
+    <li class="active">
+      <a href="./" class="">
+        generic
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../ase/" class="">
+        ase
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../cp2k/" class="">
+        cp2k
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../lammps/" class="">
+        lammps
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../runner/" class="">
+        runner
+      </a>
+    </li>
+
+  
+
+                 
+               
+             </ul>
+           </div>
+         
+      
+      </ul>
+    </div>
+
+    <div id="content">
+      <h1 id="generic-information">Generic information</h1>
+<p>The IO module in TIPS allows for the translation between different atomistic
+data formats, with a special focus for atomistic machine learning tasks.</p>
+<h2 id="available-formats">Available formats</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Read</th>
+<th>Write</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ase/asetraj</td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td>ASE Trajectory obj or files</td>
+</tr>
+<tr>
+<td>cp2k</td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td><img alt="🚫" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/1f6ab.png" title=":no_entry_sign:" /></td>
+<td>CP2K data (pos, frc, and cell)</td>
+</tr>
+<tr>
+<td>deepmd</td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td><img alt="🚫" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/1f6ab.png" title=":no_entry_sign:" /></td>
+<td>DeePMD format</td>
+</tr>
+<tr>
+<td>extxyz</td>
+<td><img alt="🚫" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/1f6ab.png" title=":no_entry_sign:" /></td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td>Extended XYZ format</td>
+</tr>
+<tr>
+<td>lammps</td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td><img alt="🚫" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/1f6ab.png" title=":no_entry_sign:" /></td>
+<td>LAMMPS dump format</td>
+</tr>
+<tr>
+<td>pinn</td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td>PiNN-style TFRecord format</td>
+</tr>
+<tr>
+<td>runner</td>
+<td><img alt="🚫" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/1f6ab.png" title=":no_entry_sign:" /></td>
+<td><img alt="✅" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/2705.png" title=":white_check_mark:" /></td>
+<td>RuNNer format</td>
+</tr>
+</tbody>
+</table>
+<h2 id="units-and-formats">Units and formats</h2>
+<p>TIPS uses a unit system compatible to ASE internally, that is:</p>
+<ul>
+<li>energy in eV</li>
+<li>length in Å</li>
+</ul>
+<p>Some formats does not have a fixed unit system, or a different unit standard,
+those are documented in the format-specific documentations.</p>
+<h2 id="the-load_ds-funciton">The <code>load_ds</code> funciton</h2>
+<p>The <code>load_ds</code> function is a universal entry point for dataset loaders in TIPS.</p>
+<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tips.io</span> <span class="kn">import</span> <span class="n">load_ds</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">load_ds</span><span class="p">(</span><span class="s1">&#39;path/to/dataset&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">deepmd</span><span class="o">-</span><span class="n">raw</span><span class="s1">&#39;)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="c1"># datasets can be joined together</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;dataset.yml&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;pinn&#39;</span><span class="p">)</span> <span class="c1"># the and converted to different formats</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+</code></pre></div>
+</div>
+<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">Output</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="c1"># printing the  dataset shows basic information about the dataset</span>
+<span class="o">&lt;</span><span class="n">tips</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+ <span class="n">fmt</span><span class="p">:</span> <span class="n">DeePMD</span> <span class="n">raw</span>
+ <span class="n">size</span><span class="p">:</span> <span class="mi">100</span>
+ <span class="n">elem</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span>
+ <span class="n">spec</span><span class="p">:</span>
+     <span class="n">cell</span><span class="p">:</span> <span class="mi">3</span><span class="n">x3</span><span class="p">,</span> <span class="nb">float</span>
+     <span class="n">elem</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="nb">int</span>
+     <span class="n">force</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="nb">float</span>
+     <span class="n">coord</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="nb">float</span>
+     <span class="n">energy</span><span class="p">:</span> <span class="p">[],</span> <span class="nb">float</span><span class="o">&gt;</span>
+</code></pre></div>
+</div>
+</div>
+<p>The function returns a <code>Dataset</code>-class object, its usage is detailed below.</p>
+<h2 id="the-dataset-class">The <code>Dataset</code> class</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="tips.io.dataset.Dataset"></a>
+  <div class="doc doc-contents first">
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.__init__" class="doc doc-heading">
+          <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indexer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Dataset should be initialized with a generator, optionally, an
+inedexer</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>generator</code></td>
+          <td>
+                <code>func</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>function that returns a data generator</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>indexer</code></td>
+          <td>
+                <code>func</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>function that returns a single data point given the index</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>meta</code></td>
+          <td>
+                <code>dic</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>dataset metadata</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.convert" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">convert</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Convert the dataset to a known format the format, the format writer
+should be one of the registered writers, with the <code>tips.convertor</code>
+decorator. See <a href="./#custom-readerwriter">#custom-readerwriter</a> for an
+example. Args: fmt (str): target format as defined in tips.io.convertors</p>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>converted</code></td>          <td>
+                <code>any</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>dependent on the convertor</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.filter" class="doc doc-heading">
+          <code class="highlight language-python"><span class="nb">filter</span><span class="p">(</span><span class="n">filters</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filters the dataset with a list of filters</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>filters</code></td>
+          <td>
+                <code>list</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>list of filters</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>filtered</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="tips.io.dataset.Dataset" href="#tips.io.dataset.Dataset">Dataset</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a TIPS Dataset</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.join" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">join</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Joins two datasets</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>ds</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="tips.io.dataset.Dataset" href="#tips.io.dataset.Dataset">Dataset</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a tips dataset object</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>joined</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="tips.io.dataset.Dataset" href="#tips.io.dataset.Dataset">Dataset</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>joined dataset</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.map_elems" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">map_elems</span><span class="p">(</span><span class="n">emap</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Maps the elements of a dataset according to some typing rule</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>emap</code></td>
+          <td>
+                <code>dict or str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a dict or a LAMMPS data file</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>mapped</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="tips.io.dataset.Dataset" href="#tips.io.dataset.Dataset">Dataset</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>mapped dataset</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.shuffle" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">shuffle</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Shuffle the dataset, support only indexanle datasets only</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>seed</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>random seed for splitting</p>
+            </div>
+          </td>
+          <td>
+                <code>0</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>shufled</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="tips.io.dataset.Dataset" href="#tips.io.dataset.Dataset">Dataset</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>shuffled dataset</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.skim" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">skim</span><span class="p">(</span><span class="n">check_elem</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Scan througn the dataset and build some missing information when possible</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="tips.io.dataset.Dataset.subsample" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">subsample</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="n">nsample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">psample</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_key</span><span class="o">=</span><span class="s1">&#39;force_std&#39;</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Subsample a dataet according to certain variables</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>'head', 'tail', 'uniform' or 'sorted'</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>nsample</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>number of samples to take</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>psample</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>percentile of samples to take</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sort_key</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>key used to sort the data</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;force_std&#39;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>idx</code></td>          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>inidices of the selected samples</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>subsampled</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="tips.io.dataset.Dataset" href="#tips.io.dataset.Dataset">Dataset</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>a TIPS Dataset</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div><h2 id="custom-readerwriter">Custom reader/writer</h2>
+<p>It is possible to extend TIPS by registering extra reader/writers, an example
+for custom reader/writer can be found below:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tips.io.utils</span> <span class="kn">import</span> <span class="n">tips_reader</span><span class="p">,</span> <span class="n">tips_convert</span>
+
+<span class="nd">@tips_reader</span><span class="p">(</span><span class="s1">&#39;my-ase&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">load_ase</span><span class="p">(</span><span class="n">traj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; An example reader for ASE Atoms</span>
+
+<span class="sd">    The function should return a tips Dataset, by specifying at least an generator which</span>
+<span class="sd">    yields elements in the dataset one by one, and the metadata specifying the data structure.</span>
+<span class="sd">    (the generator is redundent ni the below case because an ASE trajectory is indexable</span>
+<span class="sd">    and has a defined size, such a generator will be defined automatically by tips)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        traj: list of atoms</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tips.io.Dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">tips.io</span> <span class="kn">import</span> <span class="n">Dataset</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s1">&#39;spec&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;elems&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="s1">&#39;int32&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;coord&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="s1">&#39;float32&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;cell&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="s1">&#39;float32&#39;</span><span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span>
+      <span class="s1">&#39;fmt&#39;</span><span class="p">:</span> <span class="s1">&#39;Custom ASE Format&#39;</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">indexer</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">traj</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+           <span class="s1">&#39;elems&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">numbers</span>
+           <span class="s1">&#39;coord&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+           <span class="s1">&#39;cell&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">generator</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]):</span>
+            <span class="k">yield</span> <span class="n">indexer</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">,</span> <span class="n">indexer</span><span class="o">=</span><span class="n">indexer</span><span class="p">)</span>
+
+
+<span class="nd">@tips_convert</span><span class="p">(</span><span class="s1">&#39;my-ase&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ds_to_ase</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; An example data converter to ASE trajectory</span>
+
+<span class="sd">    The function must takes on dataset and optionally extra keyword arguments as inputs.</span>
+<span class="sd">    There is no limitaton on the return values.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dataset (tips.io.Dataset): a dataset object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="p">[</span>
+       <span class="n">Atoms</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;elems&#39;</span><span class="p">],</span>
+             <span class="n">positions</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;coord&#39;</span><span class="p">],</span>
+             <span class="n">cell</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;cell&#39;</span><span class="p">])</span>
+       <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataset</span>
+    <span class="p">]</span>
+    <span class="k">return</span>  <span class="n">traj</span>
+</code></pre></div>
+<p>The additonal format will be available for data loading and conversion:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ds</span> <span class="o">=</span> <span class="n">load_ds</span><span class="p">([</span><span class="n">Atoms</span><span class="p">[</span><span class="s1">&#39;H&#39;</span><span class="p">],</span> <span class="n">Atoms</span><span class="p">[</span><span class="s1">&#39;Cu&#39;</span><span class="p">]],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;my-ase&#39;</span><span class="p">)</span>
+<span class="n">traj</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;my-ase&#39;</span><span class="p">)</span>
+</code></pre></div>
+    </div>
+
+  </div>
+
+  <div class="page">
+    <div class="page-prev">
+      
+      <a href="../../bias/" title="tips.bias"><span>«</span> Previous</a>
+      
+    </div>
+    <div class="page-next">
+      
+      <a href="../ase/" title="ase" />Next <span>»</span></a>
+      
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with <a href="https://www.mkdocs.org">mkdocs</a> and the <a href="https://github.com/yqshao/mkdocs-flux-theme">flux</a> theme.
+  </div>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!--
+  This Basic theme serves as an example for how to create other
+  themes by demonstrating the features with minimal HTML and CSS.
+  Comments like this will be through the code to explain briefly
+  what each feature is and point you to the MkDocs documentation
+  to find out more.
+-->
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!--
+    The page_title contains the title for a page as shown in the navigation.
+    Site name contains the name as defined in the mkdocs.yml
+  -->
+  <title>cp2k - TIPS</title>
+
+  <link rel="stylesheet" href="../../../css/theme.css">
+  <link rel="stylesheet" href="../../../css/pygments.css">
+  <link rel="icon" href="data:,">
+  
+    <link href="../../../assets/_mkdocstrings.css" rel="stylesheet">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,600;1,400;1,700&family=Noto+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+
+  <script>
+    var base_url = "../../..";
+    $(document).ready(function(){
+          $('table').wrap('<div class="table-wrapper"></div>');
+    });
+  </script>
+
+  <script src="../../../js/mike.js"></script>
+
+  
+    <script src="../../../js/mathjax.js"></script>
+  
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+    <script src="../../../search/main.js"></script>
+  
+
+</head>
+
+<body>
+  <header class="header">
+    <ul>
+      <li id="logo">
+        <a href="../../..">T<span>IPS</span></a>
+      </li>
+      
+      
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+      
+      
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+      
+      
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+      
+      <li class="tools">
+        
+          <a id="nav-toggle" class="tool" onclick="nav_toggle()">
+        
+          <svg><use xlink:href="../../../svg/sprite.svg#menu-2"></use></svg>
+        </a>
+        <script>
+           function nav_toggle() {
+               var bar = document.getElementById("tab-bar");
+               if (bar.style.display === "none") {
+                   bar.style.display = "block";
+               } else {
+                   bar.style.display = "none";
+               }
+           }
+          function nav_reset() {
+              var bar = document.getElementById("tab-bar");
+              if (window.innerWidth>950){
+                  bar.style.display = "block";
+              } else {
+                  bar.style.display = "none";
+              }
+          }
+          window.onresize = nav_reset;
+        </script>
+        
+        
+        <a class="tool" href="https://github.com/teoroo-cmc/tips/">
+          <svg><use xlink:href="../../../svg/sprite.svg#brand-github"></use></svg>
+          <span>teoroo-cmc/tips</span>
+        </a>
+        
+      </li>
+    </ul>
+  </header>
+
+
+  <div id="main">
+    <div id="tab-bar">
+      <ul>
+      
+       
+  <li  class="tab" >
+    <a href="../../.." class="">
+      Home
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li  class="tab" >
+    <a href="../../../cli/convert/">
+      CLI
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+             </ul>
+           </div>
+         
+      
+       
+  
+  <li class="active tab" >
+    <a href="../../bias/">
+      Python
+    </a>
+  </li>
+
+         
+           <div class="nav-bar">
+             <ul>
+               
+                 
+                   
+    <li >
+      <a href="../../bias/" class="">
+        tips.bias
+      </a>
+    </li>
+
+                 
+                   
+  <a class="nav-title" > tips.io </a>
+  
+    
+    <li >
+      <a href="../generic/" class="">
+        generic
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../ase/" class="">
+        ase
+      </a>
+    </li>
+
+  
+    
+    <li class="active">
+      <a href="./" class="">
+        cp2k
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../lammps/" class="">
+        lammps
+      </a>
+    </li>
+
+  
+    
+    <li >
+      <a href="../runner/" class="">
+        runner
+      </a>
+    </li>
+
+  
+
+                 
+               
+             </ul>
+           </div>
+         
+      
+      </ul>
+    </div>
+
+    <div id="content">
+      <h1 id="cp2k-format">CP2K Format</h1>
+<p>CP2K outputs can be loaded from the <code>%PRINT%</code> sections or the log file. The
+former can be loaded via the <code>tips.io.cp2k</code> module, the later via the
+<code>tips.io.cp2klog</code> module.</p>
+<p><strong>Note</strong> that the CP2K format assumes atomic units, and loader uses CODATA
+version 2006, as adapted by CP2K instead of the 2014 version used in ASE by
+default.</p>
+<h2 id="tipsiocp2k"><code>tips.io.cp2k</code></h2>
+<p>The <code>cp2k</code> module reads CP2K ouputs in written as specified in the
+<a href="https://manual.cp2k.org/trunk/CP2K_INPUT/MOTION/PRINT.html">%MOTION%PRINT%</a>
+section. Those files are typically named as <code>path/proj-pos-1.xyz</code>,
+<code>path/proj-frc-1.xyz</code>, etc, where the project name are specified in
+<a href="https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL.html#list_PROJECT_NAME">%GLOBAL%PROJECT_NAME%</a>.</p>
+<details>
+<summary>Source code</summary>
+<div class="highlight"><pre><span></span><code><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;This module implements the loader for CP2K MD trajectories&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">tips.io.utils</span> <span class="kn">import</span> <span class="n">list_loader</span>
+<span class="kn">from</span> <span class="nn">ase.units</span> <span class="kn">import</span> <span class="n">create_units</span>
+
+<span class="c1"># This is to follow the CP2K standard to use CODATA 2006, which differs from the</span>
+<span class="c1"># the defaults of ASE (as of ASE ver 3.23 and CP2K v2022.1, Sep 2022)</span>
+<span class="n">units</span> <span class="o">=</span> <span class="n">create_units</span><span class="p">(</span><span class="s2">&quot;2006&quot;</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;tips&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_index_xyz</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Indexes a list of cp2k files, return the location to each frame&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">mmap</span><span class="o">,</span> <span class="nn">re</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>  <span class="c1"># use the first line as the frame identifier</span>
+    <span class="n">first_line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;(^|</span><span class="se">\n</span><span class="s2">)&quot;</span> <span class="o">+</span> <span class="n">first_line</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;(</span><span class="se">\r\n</span><span class="s2">|</span><span class="se">\n</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">mmap</span><span class="o">.</span><span class="n">mmap</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="n">mmap</span><span class="o">.</span><span class="n">ACCESS_READ</span><span class="p">)</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">m</span><span class="p">)]</span>
+    <span class="n">indexes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="n">fname</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">locs</span><span class="p">),</span> <span class="n">locs</span><span class="p">))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">indexes</span>
+
+
+<span class="k">def</span> <span class="nf">_index_cell</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads a cp2k cell file, returns cell vectors for all frames&quot;&quot;&quot;</span>
+    <span class="n">cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">cells</span>
+
+
+<span class="k">def</span> <span class="nf">_index_ener</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Indexes a cp2k energy file, returns the total energy&quot;&quot;&quot;</span>
+    <span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">energies</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s2">&quot;Hartree&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_load_pos</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">ase.data</span> <span class="kn">import</span> <span class="n">atomic_numbers</span>
+
+    <span class="n">fname</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="n">index</span>
+    <span class="n">elem</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">coord</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atomic_numbers</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">coord</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;elem&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">),</span> <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)}</span>
+
+
+<span class="k">def</span> <span class="nf">_load_frc</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">ase.data</span> <span class="kn">import</span> <span class="n">atomic_numbers</span>
+
+    <span class="n">fname</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="n">index</span>
+    <span class="n">force</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">force</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># by default, CP2K writes xyz in a.u. (Hartree/Bohr)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">force</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s2">&quot;Hartree&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">units</span><span class="p">[</span><span class="s2">&quot;Bohr&quot;</span><span class="p">]}</span>
+
+
+<span class="k">def</span> <span class="nf">_load_ener</span><span class="p">(</span><span class="n">energy</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_load_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="n">cell</span><span class="p">}</span>
+
+
+<span class="n">_frc_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}}</span>
+<span class="n">_cell_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}}</span>
+<span class="n">_ener_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[]}}</span>
+<span class="n">_pos_spec</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;elem&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]},</span>
+    <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span>
+<span class="p">}</span>
+
+
+<span class="nd">@list_loader</span>
+<span class="k">def</span> <span class="nf">load_cp2k</span><span class="p">(</span>
+    <span class="n">project</span><span class="p">,</span>
+    <span class="n">cp2k_pos</span><span class="o">=</span><span class="s2">&quot;pos-1.xyz&quot;</span><span class="p">,</span>
+    <span class="n">cp2k_cell</span><span class="o">=</span><span class="s2">&quot;1.cell&quot;</span><span class="p">,</span>
+    <span class="n">cp2k_frc</span><span class="o">=</span><span class="s2">&quot;frc-1.xyz&quot;</span><span class="p">,</span>
+    <span class="n">cp2k_ener</span><span class="o">=</span><span class="s2">&quot;1.ener&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads cp2k-formatted outputs as datasets</span>
+
+<span class="sd">    By default, the following supported output files are scanned and matching</span>
+<span class="sd">    files will be loaded. The loader assumes that all files contains the same</span>
+<span class="sd">    number of matching frames.</span>
+
+<span class="sd">    - ener: f&quot;{project}-{cp2k_ener}&quot;</span>
+<span class="sd">    - cell: f&quot;{project}-{cp2k_cell}&quot;</span>
+<span class="sd">    - pos: f&quot;{project}-{cp2k_pos}&quot;</span>
+<span class="sd">    - frc: f&quot;{project}-{cp2k_frc}&quot;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        project (str): the CP2K project name</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dataset: a TIPS dataset</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">exists</span>
+    <span class="kn">from</span> <span class="nn">ase.data</span> <span class="kn">import</span> <span class="n">atomic_numbers</span>
+    <span class="kn">from</span> <span class="nn">tips.io.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+
+    <span class="n">default_pattern</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;pos&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">cp2k_pos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">_index_xyz</span><span class="p">,</span> <span class="n">_load_pos</span><span class="p">,</span> <span class="n">_pos_spec</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;frc&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">cp2k_frc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">_index_xyz</span><span class="p">,</span> <span class="n">_load_frc</span><span class="p">,</span> <span class="n">_frc_spec</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;cell&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">cp2k_cell</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">_index_cell</span><span class="p">,</span> <span class="n">_load_cell</span><span class="p">,</span> <span class="n">_cell_spec</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;ener&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">cp2k_ener</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">_index_ener</span><span class="p">,</span> <span class="n">_load_ener</span><span class="p">,</span> <span class="n">_ener_spec</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">indices</span><span class="p">,</span> <span class="n">loaders</span><span class="p">,</span> <span class="n">specs</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">indexer</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">default_pattern</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">indices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">indexer</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">loaders</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">loader</span>
+            <span class="n">specs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">loader</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">loaders</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">loaders</span><span class="p">[</span><span class="n">k</span><span class="p">](</span><span class="n">indices</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sizes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Inconsistent sizes </span><span class="si">{</span><span class="n">sizes</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sizes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sizes</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Indexed CP2K project </span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">, size: </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">, files: </span><span class="si">{</span><span class="n">files</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;CP2K output&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+        <span class="s2">&quot;spec&quot;</span><span class="p">:</span> <span class="n">specs</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">,</span> <span class="n">indexer</span><span class="o">=</span><span class="n">loader</span><span class="p">)</span>
+</code></pre></div>
+</details>
+<h2 id="tipsiocp2klog"><code>tips.io.cp2klog</code></h2>
+<p>The <code>cp2klog</code> module reads in information as specified in
+<a href="https://manual.cp2k.org/trunk/CP2K_INPUT/FORCE_EVAL/PRINT.html">%FORCE_EVAL%PRINT%</a>
+section. Those outputs will by wriiten by CP2K to stdout.</p>
+<details>
+<summary>Source code</summary>
+<div class="highlight"><pre><span></span><code><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;This module implements the loader for CP2K log files&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tips.io.utils</span> <span class="kn">import</span> <span class="n">list_loader</span>
+<span class="kn">from</span> <span class="nn">ase.units</span> <span class="kn">import</span> <span class="n">create_units</span>
+
+<span class="c1"># This is to follow the CP2K standard to use CODATA 2006, which differs from the</span>
+<span class="c1"># the defaults of ASE (as of ASE ver 3.23 and CP2K v2022.1, Sep 2022)</span>
+<span class="n">units</span> <span class="o">=</span> <span class="n">create_units</span><span class="p">(</span><span class="s2">&quot;2006&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_index_pattern</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">mmap</span><span class="o">,</span> <span class="nn">re</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">mmap</span><span class="o">.</span><span class="n">mmap</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="n">mmap</span><span class="o">.</span><span class="n">ACCESS_READ</span><span class="p">)</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">m</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">locs</span>
+
+
+<span class="k">def</span> <span class="nf">_index_energy</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">mmap</span><span class="o">,</span> <span class="nn">re</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;ENERGY\|\ Total FORCE_EVAL.*:\s*([-+]?\d*\.?\d*)&quot;</span>
+    <span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s2">&quot;Hartree&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">energies</span>
+
+
+<span class="k">def</span> <span class="nf">_load_cell</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+        <span class="s2">&quot; CELL| Volume [angstrom^3]:&quot;</span>
+    <span class="p">),</span> <span class="s2">&quot;Unknown format of CP2K log, aborting&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)}</span>
+
+
+<span class="k">def</span> <span class="nf">_load_coord</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">coord</span><span class="p">,</span> <span class="n">elem</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; MODULE QUICKSTEP:  ATOMIC COORDINATES IN angstrom&quot;</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; Atom  Kind  Element&quot;</span><span class="p">)</span>
+    <span class="p">),</span> <span class="s2">&quot;Unknown format of CP2K log, aborting&quot;</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">l</span><span class="p">:</span>
+        <span class="n">coord</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">),</span> <span class="s2">&quot;elem&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)}</span>
+
+
+<span class="k">def</span> <span class="nf">_load_force</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; ATOMIC FORCES in [a.u.]&quot;</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot; # Atom   Kind   Element&quot;</span><span class="p">)</span>
+    <span class="p">),</span> <span class="s2">&quot;Unknown format of CP2K log, aborting&quot;</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;SUM OF&quot;</span><span class="p">):</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">:])</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s2">&quot;Hartree&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">units</span><span class="p">[</span><span class="s2">&quot;Bohr&quot;</span><span class="p">]}</span>
+
+
+<span class="k">def</span> <span class="nf">_load_stress</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">loc</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+        <span class="s2">&quot; STRESS| Analytical stress tensor [GPa]&quot;</span>
+    <span class="p">)</span> <span class="o">&amp;</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+        <span class="s2">&quot; STRESS|                        x&quot;</span>
+    <span class="p">),</span> <span class="s2">&quot;Unknown format of CP2K log, aborting&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="p">[</span><span class="s2">&quot;GPa&quot;</span><span class="p">]}</span>
+
+
+<span class="nd">@list_loader</span>
+<span class="k">def</span> <span class="nf">load_cp2klog</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads cp2k-formatted logs</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname (str): the path to CP2K log file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dataset: a TIPS dataset</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">exists</span>
+    <span class="kn">from</span> <span class="nn">ase.data</span> <span class="kn">import</span> <span class="n">atomic_numbers</span>
+    <span class="kn">from</span> <span class="nn">tips.io.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+
+    <span class="n">specs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}},</span>
+        <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;elem&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]},</span>
+            <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">]},</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[]}},</span>
+        <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}},</span>
+        <span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]}},</span>
+    <span class="p">}</span>
+
+    <span class="n">indexers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">fname</span><span class="p">:</span> <span class="n">_index_pattern</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot; CELL\| Volume \[angstrom\^3\]&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">fname</span><span class="p">:</span> <span class="n">_index_pattern</span><span class="p">(</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot; MODULE QUICKSTEP:  ATOMIC COORDINATES IN angstrom&quot;</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">_index_energy</span><span class="p">,</span>
+        <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">fname</span><span class="p">:</span> <span class="n">_index_pattern</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot; ATOMIC FORCES in \[a.u.\]&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">fname</span><span class="p">:</span> <span class="n">_index_pattern</span><span class="p">(</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot; STRESS\| Analytical stress tensor \[GPa\]&quot;</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">indices</span><span class="p">,</span> <span class="n">spec</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">indexers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">v</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">indices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="n">spec</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">specs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sizes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Inconsistent sizes </span><span class="si">{</span><span class="n">sizes</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sizes</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sizes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="n">loaders</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;cell&quot;</span><span class="p">:</span> <span class="n">_load_cell</span><span class="p">,</span>
+        <span class="s2">&quot;coord&quot;</span><span class="p">:</span> <span class="n">_load_coord</span><span class="p">,</span>
+        <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">fname</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">},</span>
+        <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">_load_force</span><span class="p">,</span>
+        <span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="n">_load_stress</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">loader</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">loaders</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">loaders</span><span class="p">[</span><span class="n">k</span><span class="p">](</span><span class="n">fname</span><span class="p">,</span> <span class="n">indices</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;CP2K log&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+        <span class="s2">&quot;spec&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">,</span> <span class="n">indexer</span><span class="o">=</span><span class="n">loader</span><span class="p">)</span>
+</code></pre></div>
+</details>
+    </div>
+
+  </div>
+
+  <div class="page">
+    <div class="page-prev">
+      
+      <a href="../ase/" title="ase"><span>«</span> Previous</a>
+      
+    </div>
+    <div class="page-next">
+      
+      <a href="../lammps/" title="lammps" />Next <span>»</span></a>
+      
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with <a href="https://www.mkdocs.org">mkdocs</a> and the <a href="https://github.com/yqshao/mkdocs-flux-theme">flux</a> theme.
+  </div>
+</body>
+</html>
