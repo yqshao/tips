@@ -218,7 +218,7 @@ class Dataset:
         import math
         import numpy as np
 
-        if "size" not in self.meta:
+        if "size" not in self.meta or self.meta["size"] is None:
             self.skim()
         size = self.meta["size"]
         assert (nsample is None) != (

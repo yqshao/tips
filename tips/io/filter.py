@@ -3,6 +3,16 @@
 import re
 import numpy as np
 
+def get_key(x, k):
+    from ase.neighborlist import primitive_neighbor_list
+    if k in x:
+        return x[k]
+    elif k=='mindist':
+        cell, pbc = (x['cell'], [True,True,True]) if ('cell' in x) else (None, False)
+        dist = primitive_neighbor_list('d', pbc, cell, x['coord'], 2.0)
+        mindist = np.min(dist)
+        return mindist
+
 
 def filters2fn(filters):
     """
@@ -21,10 +31,12 @@ def filters2fn(filters):
         "=": lambda x, y: np.all(x == y),
         "<": lambda x, y: np.all(x < y),
     }
+
     _ops = {
-        "abs": lambda x, k: np.abs(x[k]),
-        "peratom": lambda x, k: x[k] / np.shape(x["elem"])[0],
+        "abs": lambda x, k: np.abs(get_key(x,k)),
+        "peratom": lambda x, k: get_key(x,k) / np.shape(x["elem"])[0],
     }
+
     _filters = []
 
     regex = r"^(?:([a-zA-Z-_]+)|(abs|peratom)\(([a-zA-Z-_]+)\))([>=<])([+-]?[0-9]*[.]?[0-9]+)$"
@@ -33,7 +45,7 @@ def filters2fn(filters):
         match = re.match(regex, filter)
         assert match, f"filter {filter} not recognized"
         if match.group(1):
-            op = lambda x: x
+            op = lambda x, k: get_key(x, k)
             tag = match.group(1)
             comp = _comparers[match.group(4)]
             tol = float(match.group(5))
